@@ -12,7 +12,7 @@ namespace ProductService.Categories
             return new SuccessResult<None>(None.Instance());
         }
 
-        public async Task<OperationResult<Category>> ReadOne(int id)
+        public async Task<OperationResult<Category>> ReadOne(long id)
         {
             var category = await _context.Categories.FirstOrDefaultAsync(p => p.CategoryId == id);
             return category == null ?
@@ -33,9 +33,9 @@ namespace ProductService.Categories
                 });
         }
 
-        public async Task<OperationResult<None>> Update(Category value)
+        public async Task<OperationResult<None>> Update(long id, Category value)
         {
-            var storedValue = await _context.Categories.FirstAsync(x => x.CategoryId == value.CategoryId);
+            var storedValue = await _context.Categories.FirstAsync(x => x.CategoryId == id);
             if (storedValue == null)
             {
                 return new NotFoundResult<None>("Failed reading products");
@@ -47,7 +47,7 @@ namespace ProductService.Categories
             return new SuccessResult<None>(None.Instance());
         }
 
-        public async Task<OperationResult<None>> DeleteCategory(int id)
+        public async Task<OperationResult<None>> Delete(long id)
         {
             var category = await _context.Categories.FindAsync(id);
             if (category == null)

@@ -41,18 +41,20 @@ namespace ProductServiceTests
         public async Task ReadAll_Should_Return_All_Products_From_Database()
         {
             //Arrange
+            var fixture = new ProductRepositoryFixture();
+
             Category cat = new() { Name = "Cat2", CategoryId = 20 };
-            Product[] entities = new Product[]
+            Product[] entities =
                 {
                     new Product { ProductId = 10, CategoryId = 20, Category = cat, Name = "P1" },
                     new Product { ProductId = 20, CategoryId = 20, Category = cat, Name = "P2" },
                     new Product { ProductId = 30, CategoryId = 20, Category = cat, Name = "P3" }
                 };
-            _fixture._context.Products.AddRange(entities);
-            _fixture._context.SaveChanges();
+            fixture._context.Products.AddRange(entities);
+            fixture._context.SaveChanges();
 
             //Act
-            var result = await _fixture._sut.ReadAll();
+            var result = await fixture._sut.ReadAll();
 
             //Assert
             Assert.Equal(entities, result.Value);
@@ -79,13 +81,53 @@ namespace ProductServiceTests
         public async Task ReadOne_Should_Return_NotFound_When_Id_Does_Not_Exist()
         {
             // Act
-            var result = await _fixture._sut.ReadOne(1);
+            var result = await _fixture._sut.ReadOne(999);
 
             // Assert
             Assert.IsType<NotFoundResult<Product>>(result);
-            Assert.Equal("Product 1 not found", result.Message);
+            Assert.Equal("Product 999 not found", result.Message);
         }
 
+        [Fact]
+        public async Task Update_Should_Modify_Product_When_Id_Exists()
+        {
+            // Arrange
+            string expectedName = "P22";
+            int expectedCategoryId = 90;
+            Category cat = new() { Name = "Cat1", CategoryId = 60 };
+            Category cat1 = new() { Name = "Cat2", CategoryId = expectedCategoryId };
+            var product = new Product { ProductId = 9, CategoryId = 1, Category = cat, Name = "P1" };
+            _fixture._context.Add(product);
+            _fixture._context.SaveChanges();
+            Product newProduct = new() { CategoryId = cat1.CategoryId, Category = cat, Name = expectedName };
+
+            // Act
+            var result = await _fixture._sut.Update(9, newProduct);
+            var updated = await _fixture._context.Products.FirstAsync(x => x.ProductId == product.ProductId);
+
+            // Assert
+            Assert.IsType<SuccessResult<None>>(result);
+            Assert.Equal(expectedName, updated.Name);
+            Assert.Equal(expectedCategoryId, updated.CategoryId);
+        }
+
+        [Fact]
+        public async Task Delete_Should_Remove_Product_When_Id_Exists()
+        {
+            // Arrange
+            Category cat = new() { Name = "Cat1", CategoryId = 150 };
+            var product = new Product { ProductId = 600, CategoryId = 150, Category = cat, Name = "P1" };
+            _fixture._context.Add(product);
+            _fixture._context.SaveChanges();
+
+            // Act
+            var result = await _fixture._sut.Delete(product.ProductId);
+            var found = await _fixture._context.Products.FirstOrDefaultAsync(x => x.ProductId == product.ProductId);
+
+            // Assert
+            Assert.IsType<SuccessResult<None>>(result);
+            Assert.Null(found);
+        }
     }
 
     public class ProductRepositoryFixture : IDisposable
