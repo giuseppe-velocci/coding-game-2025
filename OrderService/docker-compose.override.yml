@@ -1,0 +1,57 @@
+services:
+  addressservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8080"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  orderservice:
+     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ENDPOINTS_PORT=8080
+      - API_GATE_ENDPOINT=http://orderapigate
+     ports:
+      - "8080"
+     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  productservice:
+     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+     ports:
+      - "8080"
+     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  userservice:
+     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+     ports:
+      - "8080"
+     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  orderapigate:
+     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ADDRESS_ENDPOINT=http://addressservice
+      - USERS_ENDPOINT=http://userservice
+      - PRODUCT_ENDPOINT=http://productservice
+      - ORDER_ENDPOINT=http://orderservice
+      - ENDPOINTS_PORT=8080
+     ports:
+      - "55007:8080"
+     volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+     depends_on:
+      - addressservice
+      - userservice
+      - productservice
+      - orderservice
