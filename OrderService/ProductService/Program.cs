@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using ProductService;
 using ProductService.Categories;
+using ProductService.Products;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder
-    .Services //TODO verify db filepath
-    .AddDbContext<ProductDbContext>(options => options.UseSqlite("Data Source=bin/Debug/net8.0/Products.db"));
+    .Services //TODO verify db filepath + pass as ENV var if possible
+    .AddDbContext<ProductDbContext>(options => options.UseSqlite("Data Source=Products.db"));
 
 builder.Services.AddScoped<ICrudRepository<Category>, CategoryRepository>();
+builder.Services.AddScoped<ICrudRepository<Product>, ProductRepository>();
 
 var app = builder.Build();
 
@@ -39,5 +41,6 @@ else
 }
 
 app.MapCategoryEndpoints();
+app.MapProductEndpoints();
 
 app.Run();

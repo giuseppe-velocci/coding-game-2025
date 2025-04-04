@@ -5,11 +5,11 @@ namespace ProductService.Products
 {
     public class ProductRepository(ProductDbContext _context) : ICrudRepository<Product>
     {
-        public async Task<OperationResult<None>> Create(Product value)
+        public async Task<OperationResult<long>> Create(Product value)
         {
             await _context.Products.AddAsync(value);
             await _context.SaveChangesAsync();
-            return new SuccessResult<None>(None.Instance());
+            return new SuccessResult<long>(value.ProductId);
         }
 
         public async Task<OperationResult<Product>> ReadOne(long id)

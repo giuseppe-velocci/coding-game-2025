@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ProductService.Categories
 {
-    public static class CategoryApiRouting
+    public static class ProductApiRouting
     {
         // CREATE a new category
         public static IEndpointRouteBuilder MapCategoryEndpoints(this IEndpointRouteBuilder app)

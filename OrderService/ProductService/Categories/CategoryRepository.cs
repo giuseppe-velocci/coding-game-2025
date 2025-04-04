@@ -5,11 +5,11 @@ namespace ProductService.Categories
 {
     public class CategoryRepository(ProductDbContext _context) : ICrudRepository<Category>
     {
-        public async Task<OperationResult<None>> Create(Category category)
+        public async Task<OperationResult<long>> Create(Category value)
         {
-            await _context.Categories.AddAsync(category);
+            await _context.Categories.AddAsync(value);
             await _context.SaveChangesAsync();
-            return new SuccessResult<None>(None.Instance());
+            return new SuccessResult<long>(value.CategoryId);
         }
 
         public async Task<OperationResult<Category>> ReadOne(long id)
