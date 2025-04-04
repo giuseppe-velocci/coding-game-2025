@@ -1,4 +1,5 @@
 using Core;
+using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using ProductService;
@@ -17,8 +18,13 @@ builder
     .Services //TODO verify db filepath + pass as ENV var if possible
     .AddDbContext<ProductDbContext>(options => options.UseSqlite("Data Source=Products.db"));
 
-builder.Services.AddScoped<ICrudRepository<Category>, CategoryRepository>();
-builder.Services.AddScoped<ICrudRepository<Product>, ProductRepository>();
+builder.Services
+    .AddScoped<IBaseValidator<Category>, CategoryValidator>()
+    .AddScoped<IBaseValidator<Product>, ProductValidator>()
+    .AddScoped<CategoryRepository>()
+    .AddScoped<ProductRepository>()
+    .AddScoped<ICrudRepository<Category>, SqlServerCrudExceptionsDecorator<Category, CategoryRepository>>()
+    .AddScoped<ICrudRepository<Product>, SqlServerCrudExceptionsDecorator<Product, ProductRepository>>();
 
 var app = builder.Build();
 

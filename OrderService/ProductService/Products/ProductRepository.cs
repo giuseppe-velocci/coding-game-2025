@@ -5,27 +5,27 @@ namespace ProductService.Products
 {
     public class ProductRepository(ProductDbContext _context) : ICrudRepository<Product>
     {
-        public async Task<OperationResult<long>> Create(Product value)
+        public async Task<OperationResult<long>> Create(Product value, CancellationToken cts)
         {
-            await _context.Products.AddAsync(value);
+            await _context.Products.AddAsync(value, cts);
             await _context.SaveChangesAsync();
             return new SuccessResult<long>(value.ProductId);
         }
 
-        public async Task<OperationResult<Product>> ReadOne(long id)
+        public async Task<OperationResult<Product>> ReadOne(long id, CancellationToken cts)
         {
             var product = await _context.Products.Include(p => p.Category)
-                .FirstOrDefaultAsync(p => p.ProductId == id);
+                .FirstOrDefaultAsync(p => p.ProductId == id, cts);
             return product == null ?
                     new NotFoundResult<Product>($"Product {id} not found") :
                     new SuccessResult<Product>(product);
         }
 
-        public Task<OperationResult<Product[]>> ReadAll()
+        public Task<OperationResult<Product[]>> ReadAll(CancellationToken cts)
         {
             return _context.Products
                 .Include(p => p.Category)
-                .ToArrayAsync()
+                .ToArrayAsync(cts)
                 .ContinueWith(x =>
                 {
                     OperationResult<Product[]> res = x.IsCompletedSuccessfully ?
@@ -35,9 +35,9 @@ namespace ProductService.Products
                 });
         }
 
-        public async Task<OperationResult<None>> Update(long id, Product value)
+        public async Task<OperationResult<None>> Update(long id, Product value, CancellationToken cts)
         {
-            var storedValue = await _context.Products.FirstAsync(x => x.ProductId == id);
+            var storedValue = await _context.Products.FirstAsync(x => x.ProductId == id, cts);
             if (storedValue == null)
             {
                 return new NotFoundResult<None>("Failed reading products");
@@ -50,9 +50,9 @@ namespace ProductService.Products
             return new SuccessResult<None>(None.Instance());
         }
 
-        public async Task<OperationResult<None>> Delete(long id)
+        public async Task<OperationResult<None>> Delete(long id, CancellationToken cts)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.FindAsync(id, cts);
             if (product == null)
             {
                 return new NotFoundResult<None>($"Product {id} Not found");
@@ -60,7 +60,7 @@ namespace ProductService.Products
             else
             {
                 _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cts);
             }
 
             return new SuccessResult<None>(None.Instance());
