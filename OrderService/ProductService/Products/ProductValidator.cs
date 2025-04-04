@@ -3,9 +3,14 @@
     using Core;
     using FluentValidation;
     using Infrastructure;
+    using Microsoft.Extensions.Logging;
 
-    public class ProductValidator : BaseValidator<Product>, IBaseValidator<Product>
+    public class ProductValidator : BaseValidator<Product, ProductValidator>, IBaseValidator<Product>
     {
+        public ProductValidator(ILogger<ProductValidator> logger) : base(logger)
+        {
+        }
+
         protected override void SetupValidation()
         {
             RuleFor(product => product.Name)

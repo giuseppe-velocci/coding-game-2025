@@ -8,7 +8,7 @@ namespace ProductService.Categories
         public async Task<OperationResult<long>> Create(Category value, CancellationToken cts)
         {
             await _context.Categories.AddAsync(value, cts);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cts);
             return new SuccessResult<long>(value.CategoryId);
         }
 
@@ -43,7 +43,7 @@ namespace ProductService.Categories
 
             storedValue.Name = value.Name;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cts);
             return new SuccessResult<None>(None.Instance());
         }
 
@@ -57,7 +57,7 @@ namespace ProductService.Categories
             else
             {
                 _context.Categories.Remove(category);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cts);
             }
 
             return new SuccessResult<None>(None.Instance());

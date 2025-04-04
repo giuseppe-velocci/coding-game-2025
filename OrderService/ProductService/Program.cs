@@ -24,7 +24,11 @@ builder.Services
     .AddScoped<CategoryRepository>()
     .AddScoped<ProductRepository>()
     .AddScoped<ICrudRepository<Category>, SqlServerCrudExceptionsDecorator<Category, CategoryRepository>>()
-    .AddScoped<ICrudRepository<Product>, SqlServerCrudExceptionsDecorator<Product, ProductRepository>>();
+    .AddScoped<ICrudRepository<Product>, SqlServerCrudExceptionsDecorator<Product, ProductRepository>>()
+    .AddScoped<ICrudHandler<Category>, CategoryCrudHandler>()
+    .AddScoped<ICrudHandler<Product>, ProductCrudHandler>()
+    
+    ;
 
 var app = builder.Build();
 

@@ -3,8 +3,12 @@ using Infrastructure;
 
 namespace ProductService.Categories
 {
-    public class CategoryValidator : BaseValidator<Category>
+    public class CategoryValidator : BaseValidator<Category, CategoryValidator>
     {
+        public CategoryValidator(ILogger<CategoryValidator> logger) : base(logger)
+        {
+        }
+
         protected override void SetupValidation()
         {
             RuleFor(category => category.CategoryId)

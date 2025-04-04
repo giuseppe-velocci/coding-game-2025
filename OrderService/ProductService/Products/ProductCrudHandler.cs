@@ -1,13 +1,13 @@
 ﻿using Core;
 
-namespace ProductService.Categories
+namespace ProductService.Products
 {
-    public class CategoryCrudHandler(
-        IBaseValidator<Category> _validator,
-        ICrudRepository<Category> _repo
-    ) : ICrudHandler<Category>
+    public class ProductCrudHandler(
+        IBaseValidator<Product> _validator,
+        ICrudRepository<Product> _repo
+    ) : ICrudHandler<Product>
     {
-        public async Task<OperationResult<long>> Create(Category value, CancellationToken cts)
+        public async Task<OperationResult<long>> Create(Product value, CancellationToken cts)
         {
             var validation = await _validator.ValidateItemAsync(value, cts);
             if (validation.Success)
@@ -32,12 +32,12 @@ namespace ProductService.Categories
             }
         }
 
-        public Task<OperationResult<Category[]>> ReadAll(CancellationToken cts)
+        public Task<OperationResult<Product[]>> ReadAll(CancellationToken cts)
         {
             return _repo.ReadAll(cts);
         }
 
-        public Task<OperationResult<Category>> ReadOne(long id, CancellationToken cts)
+        public Task<OperationResult<Product>> ReadOne(long id, CancellationToken cts)
         {
             if (id > 0)
             {
@@ -45,11 +45,11 @@ namespace ProductService.Categories
             }
             else
             {
-                return Task.FromResult(new ValidationFailureResult<Category>("Id must be greater than 0") as OperationResult<Category>);
+                return Task.FromResult(new ValidationFailureResult<Product>("Id must be greater than 0") as OperationResult<Product>);
             }
         }
 
-        public async Task<OperationResult<None>> Update(long id, Category value, CancellationToken cts)
+        public async Task<OperationResult<None>> Update(long id, Product value, CancellationToken cts)
         {
             if (id > 0)
             {
