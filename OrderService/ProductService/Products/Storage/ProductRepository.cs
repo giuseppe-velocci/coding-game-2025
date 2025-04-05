@@ -37,7 +37,7 @@ namespace ProductService.Products.Storage
 
         public async Task<OperationResult<None>> Update(long id, Product value, CancellationToken cts)
         {
-            var storedValue = await _context.Products.FirstAsync(x => x.ProductId == id, cts);
+            var storedValue = await _context.Products.FindAsync(id, cts);
             if (storedValue == null)
             {
                 return new NotFoundResult<None>("Failed reading products");

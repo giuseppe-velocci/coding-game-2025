@@ -35,7 +35,7 @@ namespace ProductService.Categories.Storage
 
         public async Task<OperationResult<None>> Update(long id, Category value, CancellationToken cts)
         {
-            var storedValue = await _context.Categories.FirstAsync(x => x.CategoryId == id, cts);
+            var storedValue = await _context.Categories.FindAsync(id, cts);
             if (storedValue == null)
             {
                 return new NotFoundResult<None>("Failed reading products");

@@ -27,10 +27,8 @@ builder
 builder.Services
     .AddScoped<IBaseValidator<AddressReference>, AddressReferenceValidator>()
     .AddScoped<IBaseValidator<User>, UserValidator>()
-    .AddScoped<AddressReferenceRepository>()
-    .AddScoped<UserRepository>()
-    .AddScoped<ICrudRepository<AddressReference>, SqliteCrudExceptionsDecorator<AddressReference, AddressReferenceRepository>>()
-    .AddScoped<ICrudRepository<User>, SqliteCrudExceptionsDecorator<User, UserRepository>>()
+    .AddScoped<ICrudRepository<AddressReference>, AddressReferenceRepository>()
+    .AddScoped<ICrudRepository<User>, UserRepository>()
     .AddScoped<ICrudHandler<AddressReference>, AddressReferenceCrudHandler>()
     .AddScoped<ICrudHandler<User>, UserCrudHandler>()
     ;

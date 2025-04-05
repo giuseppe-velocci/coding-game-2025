@@ -38,7 +38,7 @@ namespace UserService.Users.Storage
 
         public async Task<OperationResult<None>> Update(long id, User value, CancellationToken cts)
         {
-            var storedValue = await _context.Users.FirstAsync(x => x.UserId == id, cts);
+            var storedValue = await _context.Users.FindAsync(id, cts);
             if (storedValue == null)
             {
                 return new NotFoundResult<None>("Failed reading users");

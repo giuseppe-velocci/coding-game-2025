@@ -28,10 +28,8 @@ builder
 builder.Services
     .AddScoped<IBaseValidator<Category>, CategoryValidator>()
     .AddScoped<IBaseValidator<Product>, ProductValidator>()
-    .AddScoped<CategoryRepository>()
-    .AddScoped<ProductRepository>()
-    .AddScoped<ICrudRepository<Category>, SqliteCrudExceptionsDecorator<Category, CategoryRepository>>()
-    .AddScoped<ICrudRepository<Product>, SqliteCrudExceptionsDecorator<Product, ProductRepository>>()
+    .AddScoped<ICrudRepository<Category>,CategoryRepository>()
+    .AddScoped<ICrudRepository<Product>, ProductRepository>()
     .AddScoped<ICrudHandler<Category>, CategoryCrudHandler>()
     .AddScoped<ICrudHandler<Product>, ProductCrudHandler>()    
     ;
