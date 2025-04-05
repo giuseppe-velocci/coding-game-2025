@@ -9,9 +9,21 @@ namespace AddressRefrenceService.AddressRefrences.Storage
     {
         public async Task<OperationResult<long>> Create(AddressReference value, CancellationToken cts)
         {
-            await _context.AddressReferences.AddAsync(value, cts);
-            await _context.SaveChangesAsync(cts);
-            return new SuccessResult<long>(value.AddressId);
+            var userId = await _context
+                .Users
+                .Where(x => x.UserId == value.UserId)
+                .Select(x => x.UserId)
+                .FirstOrDefaultAsync();
+            if (userId > 0)
+            {
+                await _context.AddressReferences.AddAsync(value, cts);
+                await _context.SaveChangesAsync(cts);
+                return new SuccessResult<long>(value.AddressId);
+            }
+            else
+            {
+                return new NotFoundResult<long>($"UserId {value.UserId} not found");
+            }
         }
 
         public async Task<OperationResult<AddressReference>> ReadOne(long id, CancellationToken cts)

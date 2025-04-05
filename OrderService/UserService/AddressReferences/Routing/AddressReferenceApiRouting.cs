@@ -1,6 +1,7 @@
 ﻿using Core;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using UserService.AddressReferences;
 
 namespace UserService.Users.Routing
 {
@@ -8,44 +9,34 @@ namespace UserService.Users.Routing
     {
         private const string path = $"/address-references";
 
-        public static IEndpointRouteBuilder MapUserEndpoints(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapAddressReferenceEndpoints(this IEndpointRouteBuilder app)
         {
             app.MapPost(path, async (
-                [FromBody] User User,
-                ICrudHandler<User> handler,
+                [FromBody] AddressReference AddressReference,
+                ICrudHandler<AddressReference> handler,
                 CancellationToken cts) =>
                 {
-                    var result = await handler.Create(User, cts);
+                    var result = await handler.Create(AddressReference, cts);
                     return result.Accept(new CreatedHttpResponseResultVisitor<long>(path));
                 });
 
             app.MapGet(path, async (
-                ICrudHandler<User> handler,
+                ICrudHandler<AddressReference> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.ReadAll(cts);
-                return result.Accept(new HttpResponseResultVisitor<User[]>());
+                return result.Accept(new HttpResponseResultVisitor<AddressReference[]>());
             });
 
-            app.MapGet($"{path}/{{id:long}}", async (long id, ICrudHandler<User> handler, CancellationToken cts) =>
+            app.MapGet($"{path}/{{id:long}}", async (long id, ICrudHandler<AddressReference> handler, CancellationToken cts) =>
             {
                 var result = await handler.ReadOne(id, cts);
-                return result.Accept(new HttpResponseResultVisitor<User>());
-            });
-
-            app.MapPut($"{path}/{{id:long}}", async (
-                long id,
-                [FromBody] User updatedCategory,
-                ICrudHandler<User> handler,
-                CancellationToken cts) =>
-            {
-                var result = await handler.Update(id, updatedCategory, cts);
-                return result.Accept(new NoContentHttpResponseResultVisitor<None>());
+                return result.Accept(new HttpResponseResultVisitor<AddressReference>());
             });
 
             app.MapDelete($"{path}/{{id:long}}", async (
                 long id,
-                ICrudHandler<User> handler,
+                ICrudHandler<AddressReference> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Delete(id, cts);
