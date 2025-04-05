@@ -1,18 +1,19 @@
-﻿using Core;
+﻿using AddressService.Addresses;
+using Core;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ProductService.Categories.Routing
+namespace AddressService.Addresses.Routing
 {
-    public static class CategoryApiRouting
+    public static class AddressApiRouting
     {
-        private const string path = "/categories";
+        private const string path = "/addresses";
 
-        public static IEndpointRouteBuilder MapCategoryEndpoints(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapAddressEndpoints(this IEndpointRouteBuilder app)
         {
             app.MapPost(path, async (
-                [FromBody] Category category,
-                ICrudHandler<Category> handler,
+                [FromBody] Address category,
+                ICrudHandler<Address> handler,
                 CancellationToken cts) =>
                 {
                     var result = await handler.Create(category, cts);
@@ -20,26 +21,26 @@ namespace ProductService.Categories.Routing
                 });
 
             app.MapGet(path, async (
-                ICrudHandler<Category> handler,
+                ICrudHandler<Address> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.ReadAll(cts);
-                return result.Accept(new HttpResponseResultVisitor<Category[]>());
+                return result.Accept(new HttpResponseResultVisitor<Address[]>());
             });
 
             app.MapGet($"{path}/{{id:long}}", async (
                 long id,
-                ICrudHandler<Category> handler,
+                ICrudHandler<Address> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.ReadOne(id, cts);
-                return result.Accept(new HttpResponseResultVisitor<Category>());
+                return result.Accept(new HttpResponseResultVisitor<Address>());
             });
 
             app.MapPut($"{path}/{{id:long}}", async (
                 long id,
-                [FromBody] Category updatedCategory,
-                ICrudHandler<Category> handler,
+                [FromBody] Address updatedCategory,
+                ICrudHandler<Address> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Update(id, updatedCategory, cts);
@@ -48,7 +49,7 @@ namespace ProductService.Categories.Routing
 
             app.MapDelete($"{path}/{{id:long}}", async (
                 long id,
-                ICrudHandler<Category> handler,
+                ICrudHandler<Address> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Delete(id, cts);

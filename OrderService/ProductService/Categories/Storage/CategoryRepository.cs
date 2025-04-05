@@ -28,7 +28,7 @@ namespace ProductService.Categories.Storage
                 {
                     OperationResult<Category[]> res = x.IsCompletedSuccessfully ?
                         new SuccessResult<Category[]>(x.Result) :
-                        new CriticalFailureResult<Category[]>("Failed reading products");
+                        new CriticalFailureResult<Category[]>("Failed reading categories");
                     return res;
                 });
         }
@@ -38,7 +38,7 @@ namespace ProductService.Categories.Storage
             var storedValue = await _context.Categories.FindAsync(id, cts);
             if (storedValue == null)
             {
-                return new NotFoundResult<None>("Failed reading products");
+                return new NotFoundResult<None>("Failed reading categories");
             }
 
             storedValue.Name = value.Name;

@@ -28,7 +28,7 @@ namespace AddressService.Addresses.Storage
                 {
                     OperationResult<Address[]> res = x.IsCompletedSuccessfully ?
                         new SuccessResult<Address[]>(x.Result) :
-                        new CriticalFailureResult<Address[]>("Failed reading products");
+                        new CriticalFailureResult<Address[]>("Failed reading adresses");
                     return res;
                 });
         }
@@ -38,7 +38,7 @@ namespace AddressService.Addresses.Storage
             var storedValue = await _context.Addresses.FindAsync(id, cts);
             if (storedValue == null)
             {
-                return new NotFoundResult<None>("Failed reading products");
+                return new NotFoundResult<None>("Failed reading adresses");
             }
 
             storedValue.Street = value.Street;
