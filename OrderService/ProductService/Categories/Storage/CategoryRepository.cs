@@ -14,7 +14,7 @@ namespace ProductService.Categories.Storage
 
         public async Task<OperationResult<Category>> ReadOne(long id, CancellationToken cts)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(p => p.CategoryId == id, cts);
+            var category = await _context.Categories.FindAsync(id, cts);
             return category == null ?
                     new NotFoundResult<Category>($"Category {id} not found") :
                     new SuccessResult<Category>(category);

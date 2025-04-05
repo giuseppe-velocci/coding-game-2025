@@ -28,8 +28,7 @@ namespace AddressRefrenceService.AddressRefrences.Storage
 
         public async Task<OperationResult<AddressReference>> ReadOne(long id, CancellationToken cts)
         {
-            var user = await _context.AddressReferences
-                .FirstOrDefaultAsync(p => p.AddressId == id, cts);
+            var user = await _context.AddressReferences.FindAsync(id, cts);
             return user == null ?
                     new NotFoundResult<AddressReference>($"AddressReference {id} not found") :
                     new SuccessResult<AddressReference>(user);
