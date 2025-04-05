@@ -1,7 +1,7 @@
 ﻿using Core;
 using Infrastructure;
 
-namespace ProductService.Categories
+namespace ProductService.Categories.Service
 {
     public class CategoryCrudHandler(
         IBaseValidator<Category> _validator,

@@ -3,7 +3,15 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using ProductService;
 using ProductService.Categories;
+using ProductService.Categories.Routing;
+using ProductService.Categories.Service;
+using ProductService.Categories.Storage;
+using ProductService.Categories.Validation;
 using ProductService.Products;
+using ProductService.Products.Routing;
+using ProductService.Products.Service;
+using ProductService.Products.Storage;
+using ProductService.Products.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 

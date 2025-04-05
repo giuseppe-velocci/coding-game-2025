@@ -2,22 +2,24 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ProductService.Products
+namespace ProductService.Products.Routing
 {
     public static class ProductApiRouting
     {
+        private const string path = "/products";
+
         public static IEndpointRouteBuilder MapProductEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/products", async (
+            app.MapPost(path, async (
                 [FromBody] Product Product,
                 ICrudHandler<Product> handler,
                 CancellationToken cts) =>
                 {
                     var result = await handler.Create(Product, cts);
-                    return result.Accept(new CreatedHttpResponseResultVisitor<long>("/products"));
+                    return result.Accept(new CreatedHttpResponseResultVisitor<long>(path));
                 });
 
-            app.MapGet("/products", async (
+            app.MapGet(path, async (
                 ICrudHandler<Product> handler,
                 CancellationToken cts) =>
             {
@@ -25,13 +27,13 @@ namespace ProductService.Products
                 return result.Accept(new HttpResponseResultVisitor<Product[]>());
             });
 
-            app.MapGet("/products/{id:long}", async (long id, ICrudHandler<Product> handler, CancellationToken cts) =>
+            app.MapGet($"{path}/{{id:long}}", async (long id, ICrudHandler<Product> handler, CancellationToken cts) =>
             {
                 var result = await handler.ReadOne(id, cts);
                 return result.Accept(new HttpResponseResultVisitor<Product>());
             });
 
-            app.MapPut("/products/{id:long}", async (
+            app.MapPut($"{path}/{{id:long}}", async (
                 long id,
                 [FromBody] Product updatedCategory,
                 ICrudHandler<Product> handler,
@@ -41,7 +43,7 @@ namespace ProductService.Products
                 return result.Accept(new NoContentHttpResponseResultVisitor<None>());
             });
 
-            app.MapDelete("/products/{id:int}", async (
+            app.MapDelete($"{path}/{{id:long}}", async (
                 int id,
                 ICrudHandler<Product> handler,
                 CancellationToken cts) =>

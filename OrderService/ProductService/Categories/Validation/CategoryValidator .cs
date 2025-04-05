@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Infrastructure;
 
-namespace ProductService.Categories
+namespace ProductService.Categories.Validation
 {
     public class CategoryValidator : BaseValidator<Category, CategoryValidator>
     {

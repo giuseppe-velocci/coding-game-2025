@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ProductService;
 using ProductService.Categories;
 using ProductService.Products;
+using ProductService.Products.Storage;
 
 namespace ProductServiceTests
 {

@@ -1,7 +1,7 @@
 ﻿using Core;
 using Infrastructure;
 
-namespace ProductService.Products
+namespace ProductService.Products.Service
 {
     public class ProductCrudHandler(
         IBaseValidator<Product> _validator,

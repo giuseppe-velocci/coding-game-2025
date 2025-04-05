@@ -1,7 +1,7 @@
 ﻿using Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace ProductService.Categories
+namespace ProductService.Categories.Storage
 {
     public class CategoryRepository(ProductDbContext _context) : ICrudRepository<Category>
     {

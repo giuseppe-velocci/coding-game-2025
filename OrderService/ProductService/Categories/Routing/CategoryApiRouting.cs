@@ -2,29 +2,32 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ProductService.Categories
+namespace ProductService.Categories.Routing
 {
     public static class ProductApiRouting
     {
+        private const string path = "/categories";
+
         public static IEndpointRouteBuilder MapCategoryEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/categories", async (
+            app.MapPost(path, async (
                 [FromBody] Category category,
                 ICrudHandler<Category> handler,
                 CancellationToken cts) =>
                 {
                     var result = await handler.Create(category, cts);
-                    return result.Accept(new CreatedHttpResponseResultVisitor<long>("/categories"));
+                    return result.Accept(new CreatedHttpResponseResultVisitor<long>(path));
                 });
 
-            app.MapGet("/categories", async (
+            app.MapGet(path, async (
                 ICrudHandler<Category> handler,
-                CancellationToken cts) => {
-                    var result = await handler.ReadAll(cts);
-                    return result.Accept(new HttpResponseResultVisitor<Category[]>());
-                });
+                CancellationToken cts) =>
+            {
+                var result = await handler.ReadAll(cts);
+                return result.Accept(new HttpResponseResultVisitor<Category[]>());
+            });
 
-            app.MapGet("/categories/{id:long}", async (
+            app.MapGet($"{path}/{{id:long}}", async (
                 long id,
                 ICrudHandler<Category> handler,
                 CancellationToken cts) =>
@@ -33,7 +36,7 @@ namespace ProductService.Categories
                 return result.Accept(new HttpResponseResultVisitor<Category>());
             });
 
-            app.MapPut("/categories/{id:long}", async (
+            app.MapPut($"{path}/{{id:long}}", async (
                 long id,
                 [FromBody] Category updatedCategory,
                 ICrudHandler<Category> handler,
@@ -43,8 +46,8 @@ namespace ProductService.Categories
                 return result.Accept(new NoContentHttpResponseResultVisitor<None>());
             });
 
-            app.MapDelete("/categories/{id:int}", async (
-                int id,
+            app.MapDelete($"{path}/{{id:long}}", async (
+                long id,
                 ICrudHandler<Category> handler,
                 CancellationToken cts) =>
             {

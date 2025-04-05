@@ -1,9 +1,10 @@
-﻿namespace ProductService.Products
+﻿namespace ProductService.Products.Validation
 {
     using Core;
     using FluentValidation;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using ProductService.Products;
 
     public class ProductValidator : BaseValidator<Product, ProductValidator>, IBaseValidator<Product>
     {

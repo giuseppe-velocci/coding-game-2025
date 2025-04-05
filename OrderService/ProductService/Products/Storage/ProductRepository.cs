@@ -1,7 +1,7 @@
 ﻿using Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace ProductService.Products
+namespace ProductService.Products.Storage
 {
     public class ProductRepository(ProductDbContext _context) : ICrudRepository<Product>
     {

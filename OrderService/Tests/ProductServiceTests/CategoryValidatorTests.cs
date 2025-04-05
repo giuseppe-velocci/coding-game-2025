@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using ProductService.Categories;
+using ProductService.Categories.Validation;
 
 namespace ProductServiceTests
 {
