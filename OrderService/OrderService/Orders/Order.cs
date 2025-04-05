@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OrderService.Addresses;
+using OrderService.Users;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 namespace OrderService.Orders
@@ -14,6 +16,9 @@ namespace OrderService.Orders
         public long AddressId { get; set; }
 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+
+        public bool IsActive { get; set; } // for logical deletes
+
 
         [ForeignKey("UserId")]
         public User User { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace AddressReferenceService.AddressReferences.Validation
+﻿namespace UserService.AddressReferences.Validation
 {
     using Core;
     using FluentValidation;

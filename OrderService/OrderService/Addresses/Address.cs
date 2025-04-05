@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-namespace OrderService.Orders
+namespace OrderService.Addresses
 {
     public class Address
     {
@@ -21,5 +22,7 @@ namespace OrderService.Orders
 
         [MaxLength(20)]
         public string ZipCode { get; set; }
+
+        public bool IsActive { get; set; } // for logical deletes
     }
 }

@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderService.Addresses;
 using OrderService.Orders;
+using OrderService.Products;
+using OrderService.Users;
 
 namespace OrderService
 {

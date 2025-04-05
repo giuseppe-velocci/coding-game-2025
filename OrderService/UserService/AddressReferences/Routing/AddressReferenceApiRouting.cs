@@ -3,7 +3,7 @@ using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using UserService.AddressReferences;
 
-namespace UserService.Users.Routing
+namespace UserService.AddressReferences.Routing
 {
     public static class AddressReferenceApiRouting
     {

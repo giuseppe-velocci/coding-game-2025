@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UserService;
 using UserService.AddressReferences;
 
-namespace AddressRefrenceService.AddressRefrences.Storage
+namespace UserService.AddressReferences.Storage
 {
     public class AddressReferenceRepository(UserDbContext _context) : ICrudRepository<AddressReference>
     {

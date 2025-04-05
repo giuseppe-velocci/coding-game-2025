@@ -2,7 +2,7 @@
 using Infrastructure;
 using UserService.AddressReferences;
 
-namespace AddressReferenceService.AddressReferences.Service
+namespace UserService.AddressReferences.Service
 {
     public class AddressReferenceCrudHandler(
         IBaseValidator<AddressReference> _validator,

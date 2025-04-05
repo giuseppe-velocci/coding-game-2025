@@ -1,11 +1,12 @@
-using AddressReferenceService.AddressReferences.Service;
-using AddressReferenceService.AddressReferences.Validation;
-using AddressRefrenceService.AddressRefrences.Storage;
 using Core;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using UserService;
 using UserService.AddressReferences;
+using UserService.AddressReferences.Routing;
+using UserService.AddressReferences.Service;
+using UserService.AddressReferences.Storage;
+using UserService.AddressReferences.Validation;
 using UserService.Users;
 using UserService.Users.Routing;
 using UserService.Users.Service;

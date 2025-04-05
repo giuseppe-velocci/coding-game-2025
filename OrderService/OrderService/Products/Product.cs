@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OrderService.Orders
+namespace OrderService.Products
 {
     public class Product
     {
@@ -12,6 +12,6 @@ namespace OrderService.Orders
 
         public decimal Price { get; set; }
 
-        public bool IsActive { get; set; } // to invalid a product that is removed from Product service
+        public bool IsActive { get; set; } // for logical deletes
     }
 }
