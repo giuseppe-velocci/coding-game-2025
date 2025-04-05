@@ -14,10 +14,10 @@ namespace AddressService.Addresses.Storage
 
         public async Task<OperationResult<Address>> ReadOne(long id, CancellationToken cts)
         {
-            var category = await _context.Addresses.FindAsync(id, cts);
-            return category == null ?
+            var record = await _context.Addresses.FindAsync(id, cts);
+            return record == null ?
                     new NotFoundResult<Address>($"Address {id} not found") :
-                    new SuccessResult<Address>(category);
+                    new SuccessResult<Address>(record);
         }
 
         public Task<OperationResult<Address[]>> ReadAll(CancellationToken cts)
@@ -43,6 +43,7 @@ namespace AddressService.Addresses.Storage
 
             storedValue.Street = value.Street;
             storedValue.City = value.City;
+            storedValue.Country = value.Country;
             storedValue.State = value.State;
             storedValue.ZipCode = value.ZipCode;
 
@@ -52,14 +53,14 @@ namespace AddressService.Addresses.Storage
 
         public async Task<OperationResult<None>> Delete(long id, CancellationToken cts)
         {
-            var category = await _context.Addresses.FindAsync(id, cts);
-            if (category == null)
+            var record = await _context.Addresses.FindAsync(id, cts);
+            if (record == null)
             {
                 return new NotFoundResult<None>($"Address {id} Not found");
             }
             else
             {
-                _context.Addresses.Remove(category);
+                _context.Addresses.Remove(record);
                 await _context.SaveChangesAsync(cts);
             }
 
