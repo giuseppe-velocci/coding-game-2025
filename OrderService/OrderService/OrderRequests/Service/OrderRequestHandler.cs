@@ -20,8 +20,15 @@ namespace OrderService.OrderRequests.Service
             if (validation.Success)
             {
                 // need to gather data from the various storages
-
-                return await _repo.Create(value, cts);
+                var user = _userRepo.ReadOne(value.UserId, cts);
+                var address = 
+                    _addressRepo.ReadOne(value.AddressId, cts),
+                };
+                await Task.WhenAll(userIntegrityChecks);
+                Task[] productIntegrityChecks = value.ProductIds
+                    .Select(x => _productRepo.ReadOne(x.ProductId, cts))
+                    .ToArray();
+                return await _orderRepo.Create(value, cts);
             }
             else
             {
