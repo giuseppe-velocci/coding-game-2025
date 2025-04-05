@@ -26,6 +26,13 @@ builder.Services
 ;
 var app = builder.Build();
 
+// migrate the database (just to simplify the startup of this sample app)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AddressDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
