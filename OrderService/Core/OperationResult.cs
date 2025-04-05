@@ -20,6 +20,22 @@
         }
     }
 
+    public class ValidationFailureResult<T> : OperationResult<T>
+    {
+        public ValidationFailureResult(string message) : base(false)
+        {
+            Message = message;
+        }
+    }
+
+    public class InvalidRequestResult<T> : OperationResult<T>
+    {
+        public InvalidRequestResult(string message) : base(false)
+        {
+            Message = message;
+        }
+    }
+    
     public class CriticalFailureResult<T> : OperationResult<T>
     {
         public CriticalFailureResult(string message) : base(false)
@@ -31,6 +47,14 @@
     public class NotFoundResult<T> : OperationResult<T>
     {
         public NotFoundResult(string message) : base(false)
+        {
+            Message = message;
+        }
+    }
+    
+    public class FailedValidationResult<T> : OperationResult<T>
+    {
+        public FailedValidationResult(string message) : base(false)
         {
             Message = message;
         }

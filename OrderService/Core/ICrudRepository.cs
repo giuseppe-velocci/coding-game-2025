@@ -1,11 +1,14 @@
 ﻿namespace Core
 {
-    public interface ICrudRepository<T> where T : class
+    public interface ICrudRepository<T> : ICrudHandler<T> where T : class
+    {}
+    
+    public interface ICrudHandler<T> where T : class
     {
-        Task<OperationResult<None>> Create(T category);
-        Task<OperationResult<None>> Delete(long id);
-        Task<OperationResult<T[]>> ReadAll();
-        Task<OperationResult<T>> ReadOne(long id);
-        Task<OperationResult<None>> Update(long id, T value);
+        Task<OperationResult<long>> Create(T value, CancellationToken cts);
+        Task<OperationResult<None>> Delete(long id, CancellationToken cts);
+        Task<OperationResult<T[]>> ReadAll(CancellationToken cts);
+        Task<OperationResult<T>> ReadOne(long id, CancellationToken cts);
+        Task<OperationResult<None>> Update(long id, T value, CancellationToken cts);
     }
 }

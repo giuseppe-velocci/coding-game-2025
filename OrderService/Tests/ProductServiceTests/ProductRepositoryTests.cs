@@ -28,13 +28,14 @@ namespace ProductServiceTests
             };
 
             // Act
-            var result = await _fixture._sut.Create(product);
+            var result = await _fixture._sut.Create(product, CancellationToken.None);
             var productFromDb = await _fixture._context.Products.FirstOrDefaultAsync(p => p.ProductId == 1);
 
             // Assert
-            Assert.IsType<SuccessResult<None>>(result);
+            Assert.IsType<SuccessResult<long>>(result);
             Assert.NotNull(productFromDb);
             Assert.Equal("Test Product", productFromDb.Name);
+            Assert.Equal(1, productFromDb.ProductId);
         }
 
         [Fact]
@@ -45,16 +46,16 @@ namespace ProductServiceTests
 
             Category cat = new() { Name = "Cat2", CategoryId = 20 };
             Product[] entities =
-                {
-                    new Product { ProductId = 10, CategoryId = 20, Category = cat, Name = "P1" },
-                    new Product { ProductId = 20, CategoryId = 20, Category = cat, Name = "P2" },
-                    new Product { ProductId = 30, CategoryId = 20, Category = cat, Name = "P3" }
-                };
+            {
+                new Product { ProductId = 10, CategoryId = 20, Category = cat, Name = "P1" },
+                new Product { ProductId = 20, CategoryId = 20, Category = cat, Name = "P2" },
+                new Product { ProductId = 30, CategoryId = 20, Category = cat, Name = "P3" }
+            };
             fixture._context.Products.AddRange(entities);
             fixture._context.SaveChanges();
 
             //Act
-            var result = await fixture._sut.ReadAll();
+            var result = await fixture._sut.ReadAll(CancellationToken.None);
 
             //Assert
             Assert.Equal(entities, result.Value);
@@ -70,7 +71,7 @@ namespace ProductServiceTests
             _fixture._context.SaveChanges();
 
             // Act
-            var result = await _fixture._sut.ReadOne(6);
+            var result = await _fixture._sut.ReadOne(6, CancellationToken.None);
 
             // Assert
             Assert.IsType<SuccessResult<Product>>(result);
@@ -81,7 +82,7 @@ namespace ProductServiceTests
         public async Task ReadOne_Should_Return_NotFound_When_Id_Does_Not_Exist()
         {
             // Act
-            var result = await _fixture._sut.ReadOne(999);
+            var result = await _fixture._sut.ReadOne(999, CancellationToken.None);
 
             // Assert
             Assert.IsType<NotFoundResult<Product>>(result);
@@ -102,7 +103,7 @@ namespace ProductServiceTests
             Product newProduct = new() { CategoryId = cat1.CategoryId, Category = cat, Name = expectedName };
 
             // Act
-            var result = await _fixture._sut.Update(9, newProduct);
+            var result = await _fixture._sut.Update(9, newProduct, CancellationToken.None);
             var updated = await _fixture._context.Products.FirstAsync(x => x.ProductId == product.ProductId);
 
             // Assert
@@ -121,7 +122,7 @@ namespace ProductServiceTests
             _fixture._context.SaveChanges();
 
             // Act
-            var result = await _fixture._sut.Delete(product.ProductId);
+            var result = await _fixture._sut.Delete(product.ProductId, CancellationToken.None);
             var found = await _fixture._context.Products.FirstOrDefaultAsync(x => x.ProductId == product.ProductId);
 
             // Assert

@@ -1,11 +1,9 @@
 using Core;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using ProductService;
 using ProductService.Categories;
 using ProductService.Products;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
