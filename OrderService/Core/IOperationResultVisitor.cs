@@ -1,10 +1,11 @@
 ﻿namespace Core
 {
-    public interface IOperationResultVisitor<T>
+    public interface IOperationResultVisitor<TIn, TOut>
     {
-        int Visit(SuccessResult<T> successResult);
-        int Visit(CriticalFailureResult<T> criticalFailureResult);
-        int Visit(NotFoundResult<T> notFoundResult);
-        int Visit(FailedValidationResult<T> failedValidationResult);
+        TOut Visit(SuccessResult<TIn> successResult);
+        TOut Visit(CriticalFailureResult<TIn> criticalFailureResult);
+        TOut Visit(NotFoundResult<TIn> notFoundResult);
+        TOut Visit(ValidationFailureResult<TIn> validationFailureResult);
+        TOut Visit(InvalidRequestResult<TIn> validationFailureResult);
     }
 }

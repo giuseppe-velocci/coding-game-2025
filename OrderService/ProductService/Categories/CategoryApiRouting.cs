@@ -1,4 +1,5 @@
 ﻿using Core;
+using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ProductService.Categories
@@ -9,45 +10,46 @@ namespace ProductService.Categories
         {
             app.MapPost("/categories", async (
                 [FromBody] Category category,
-                ICrudHandler<Category> repo,
+                ICrudHandler<Category> handler,
                 CancellationToken cts) =>
                 {
-                    await repo.Create(category, cts);
-                    return Results.Created($"/categories/{category.CategoryId}", category);
+                    var result = await handler.Create(category, cts);
+                    return result.Accept(new CreatedHttpResponseResultVisitor<long>("/categories"));
                 });
 
             app.MapGet("/categories", async (
-                ICrudHandler<Category> repo,
-                CancellationToken cts) => await repo.ReadAll(cts));
+                ICrudHandler<Category> handler,
+                CancellationToken cts) => {
+                    var result = await handler.ReadAll(cts);
+                    return result.Accept(new HttpResponseResultVisitor<Category[]>());
+                });
 
             app.MapGet("/categories/{id:long}", async (
                 long id,
-                ICrudHandler<Category> repo,
+                ICrudHandler<Category> handler,
                 CancellationToken cts) =>
             {
-                var category = await repo.ReadOne(id, cts);
-                return category is not null ?
-                    Results.Ok(category) :
-                    Results.NotFound($"Category with ID {id} not found.");
+                var result = await handler.ReadOne(id, cts);
+                return result.Accept(new HttpResponseResultVisitor<Category>());
             });
 
             app.MapPut("/categories/{id:long}", async (
                 long id,
                 [FromBody] Category updatedCategory,
-                ICrudHandler<Category> repo,
+                ICrudHandler<Category> handler,
                 CancellationToken cts) =>
             {
-                await repo.Update(id, updatedCategory, cts);
-                return Results.Ok();
+                var result = await handler.Update(id, updatedCategory, cts);
+                return result.Accept(new NoContentHttpResponseResultVisitor<None>());
             });
 
             app.MapDelete("/categories/{id:int}", async (
                 int id,
-                ICrudHandler<Category> repo,
+                ICrudHandler<Category> handler,
                 CancellationToken cts) =>
             {
-                await repo.Delete(id, cts);
-                return Results.NoContent();
+                var result = await handler.Delete(id, cts);
+                return result.Accept(new NoContentHttpResponseResultVisitor<None>());
             });
 
             return app;

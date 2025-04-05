@@ -1,4 +1,5 @@
 ﻿using Core;
+using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ProductService.Products
@@ -9,42 +10,44 @@ namespace ProductService.Products
         {
             app.MapPost("/products", async (
                 [FromBody] Product Product,
-                ICrudHandler<Product> repo,
+                ICrudHandler<Product> handler,
                 CancellationToken cts) =>
                 {
-                    await repo.Create(Product, cts);
-                    return Results.Created($"/products/{Product.CategoryId}", Product);
+                    var result = await handler.Create(Product, cts);
+                    return result.Accept(new CreatedHttpResponseResultVisitor<long>("/products"));
                 });
 
             app.MapGet("/products", async (
-                ICrudHandler<Product> repo,
-                CancellationToken cts) => await repo.ReadAll(cts));
-
-            app.MapGet("/products/{id:long}", async (long id, ICrudHandler<Product> repo, CancellationToken cts) =>
+                ICrudHandler<Product> handler,
+                CancellationToken cts) =>
             {
-                var Product = await repo.ReadOne(id, cts);
-                return Product is not null ?
-                    Results.Ok(Product) :
-                    Results.NotFound($"Product with ID {id} not found.");
+                var result = await handler.ReadAll(cts);
+                return result.Accept(new HttpResponseResultVisitor<Product[]>());
+            });
+
+            app.MapGet("/products/{id:long}", async (long id, ICrudHandler<Product> handler, CancellationToken cts) =>
+            {
+                var result = await handler.ReadOne(id, cts);
+                return result.Accept(new HttpResponseResultVisitor<Product>());
             });
 
             app.MapPut("/products/{id:long}", async (
                 long id,
                 [FromBody] Product updatedCategory,
-                ICrudHandler<Product> repo,
+                ICrudHandler<Product> handler,
                 CancellationToken cts) =>
             {
-                await repo.Update(id, updatedCategory, cts);
-                return Results.Ok();
+                var result = await handler.Update(id, updatedCategory, cts);
+                return result.Accept(new NoContentHttpResponseResultVisitor<None>());
             });
 
             app.MapDelete("/products/{id:int}", async (
                 int id,
-                ICrudHandler<Product> repo,
+                ICrudHandler<Product> handler,
                 CancellationToken cts) =>
             {
-                await repo.Delete(id, cts);
-                return Results.NoContent();
+                var result = await handler.Delete(id, cts);
+                return result.Accept(new NoContentHttpResponseResultVisitor<None>());
             });
 
             return app;

@@ -10,6 +10,8 @@
         public T? Value { get; protected set; }
         public string Message { get; protected set; } = string.Empty;
         public bool Success { get; }
+
+        public abstract TOut Accept<TOut>(IOperationResultVisitor<T, TOut> visitor);
     }
 
     public class SuccessResult<T> : OperationResult<T>
@@ -17,6 +19,11 @@
         public SuccessResult(T? value) : base(true)
         {
             Value = value;
+        }
+
+        public override TOut Accept<TOut>(IOperationResultVisitor<T, TOut> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 
@@ -26,6 +33,11 @@
         {
             Message = message;
         }
+
+        public override TOut Accept<TOut>(IOperationResultVisitor<T, TOut> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 
     public class InvalidRequestResult<T> : OperationResult<T>
@@ -33,6 +45,11 @@
         public InvalidRequestResult(string message) : base(false)
         {
             Message = message;
+        }
+
+        public override TOut Accept<TOut>(IOperationResultVisitor<T, TOut> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
     
@@ -42,6 +59,11 @@
         {
             Message = message;
         }
+
+        public override TOut Accept<TOut>(IOperationResultVisitor<T, TOut> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
     
     public class NotFoundResult<T> : OperationResult<T>
@@ -50,13 +72,10 @@
         {
             Message = message;
         }
-    }
-    
-    public class FailedValidationResult<T> : OperationResult<T>
-    {
-        public FailedValidationResult(string message) : base(false)
+
+        public override TOut Accept<TOut>(IOperationResultVisitor<T, TOut> visitor)
         {
-            Message = message;
+            return visitor.Visit(this);
         }
     }
 

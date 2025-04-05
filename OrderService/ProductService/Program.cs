@@ -21,11 +21,10 @@ builder.Services
     .AddScoped<IBaseValidator<Product>, ProductValidator>()
     .AddScoped<CategoryRepository>()
     .AddScoped<ProductRepository>()
-    .AddScoped<ICrudRepository<Category>, SqlServerCrudExceptionsDecorator<Category, CategoryRepository>>()
-    .AddScoped<ICrudRepository<Product>, SqlServerCrudExceptionsDecorator<Product, ProductRepository>>()
+    .AddScoped<ICrudRepository<Category>, SqliteCrudExceptionsDecorator<Category, CategoryRepository>>()
+    .AddScoped<ICrudRepository<Product>, SqliteCrudExceptionsDecorator<Product, ProductRepository>>()
     .AddScoped<ICrudHandler<Category>, CategoryCrudHandler>()
-    .AddScoped<ICrudHandler<Product>, ProductCrudHandler>()
-    
+    .AddScoped<ICrudHandler<Product>, ProductCrudHandler>()    
     ;
 
 var app = builder.Build();

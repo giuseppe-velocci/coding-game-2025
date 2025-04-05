@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure
 {
-    public class SqlServerCrudExceptionsDecorator<T, TRepository>(
+    public class SqliteCrudExceptionsDecorator<T, TRepository>(
         ILogger<TRepository> _logger,
         TRepository _repo
     ) : ICrudRepository<T>
