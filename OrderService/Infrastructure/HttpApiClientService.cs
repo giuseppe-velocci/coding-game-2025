@@ -7,6 +7,7 @@ namespace Infrastructure
     public class HttpApiClientService : AsbtractHttpApiClientService, IHttpClientService
     {
         private readonly ILogger<HttpApiClientService> _logger;
+        private readonly static JsonSerializerOptions serializerOptions = new() { PropertyNameCaseInsensitive = true };
 
         public HttpApiClientService(IHttpClientFactory httpClientFactory, ILogger<HttpApiClientService> logger)
             :base(httpClientFactory, logger)
@@ -25,7 +26,7 @@ namespace Infrastructure
                 if (response.IsSuccessStatusCode)
                 {
                     var res = await response.Content.ReadAsStringAsync(cts);
-                    var obj = JsonSerializer.Deserialize<T>(res);
+                    var obj = JsonSerializer.Deserialize<T>(res, serializerOptions);
                     return obj;
                 }
                 else
