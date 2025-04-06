@@ -4,6 +4,9 @@ using OrderApiGate;
 using OrderApiGate.Addresses;
 using OrderApiGate.Addresses.Routing;
 using OrderApiGate.Addresses.Service;
+using OrderApiGate.Users;
+using OrderApiGate.Users.Routing;
+using OrderApiGate.Users.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +18,26 @@ builder.Services.AddSwaggerGen();
 
 ApiGateConfig config = new()
 {
+    UserApiEndpoint = ApiGateConfig.BuildUrl(
+        Environment.GetEnvironmentVariable($"USERS_ENDPOINT"),
+        Environment.GetEnvironmentVariable($"ENDPOINTS_PORT")),
     AddressApiEndpoint = ApiGateConfig.BuildUrl(
         Environment.GetEnvironmentVariable($"ADDRESS_ENDPOINT"),
+        Environment.GetEnvironmentVariable($"ENDPOINTS_PORT")),
+    ProductApiEndpoint = ApiGateConfig.BuildUrl(
+        Environment.GetEnvironmentVariable($"PRODUCT_ENDPOINT"),
+        Environment.GetEnvironmentVariable($"ENDPOINTS_PORT")),
+    OrderApiEndpoint = ApiGateConfig.BuildUrl(
+        Environment.GetEnvironmentVariable($"ORDER_ENDPOINT"),
         Environment.GetEnvironmentVariable($"ENDPOINTS_PORT"))
 };
 
 builder.Services
     .AddHttpClient()
     .AddSingleton(config)
-    .AddScoped<ICrudHandler<Address, WriteAddress>, AddressApiHandler>();
+    .AddScoped<ICrudHandler<Address, WriteAddress>, AddressApiHandler>()
+    .AddScoped<ICrudHandler<User, WriteUser>, UserApiHandler>()
+    ;
 
 var app = builder.Build();
 
@@ -35,5 +49,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapAddressEndpoints();
+app.MapUserEndpoints();
 
 app.Run();

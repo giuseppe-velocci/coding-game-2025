@@ -3,20 +3,20 @@ using Infrastructure;
 using System.Text.Json;
 using static ApiResponseHelper;
 
-namespace OrderApiGate.Addresses.Service
+namespace OrderApiGate.Users.Service
 {
-    public class AddressApiHandler : AsbtractHttpApiClientService, ICrudHandler<Address, WriteAddress>
+    public class UserApiHandler : AsbtractHttpApiClientService, ICrudHandler<User, WriteUser>
     {
         private readonly string _endpointUrl;
         private readonly static JsonSerializerOptions _serializerOptions = new() { PropertyNameCaseInsensitive = true };
 
-        public AddressApiHandler(IHttpClientFactory httpClientFactory, ApiGateConfig config, ILogger<AddressApiHandler> logger) :
+        public UserApiHandler(IHttpClientFactory httpClientFactory, ApiGateConfig config, ILogger<UserApiHandler> logger) :
             base(httpClientFactory, logger)
         {
-            _endpointUrl = $"{config.AddressApiEndpoint}/addresses";
+            _endpointUrl = $"{config.UserApiEndpoint}/users";
         }
 
-        public async Task<OperationResult<long>> Create(WriteAddress value, CancellationToken cts)
+        public async Task<OperationResult<long>> Create(WriteUser value, CancellationToken cts)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace OrderApiGate.Addresses.Service
             return new InvalidRequestResult<None>("Unexpected issues");
         }
 
-        public async Task<OperationResult<Address[]>> ReadAll(CancellationToken cts)
+        public async Task<OperationResult<User[]>> ReadAll(CancellationToken cts)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var response = await _retryPolicy.ExecuteAsync(() =>
@@ -84,10 +84,10 @@ namespace OrderApiGate.Addresses.Service
 
             var responseContent = await response.Content.ReadAsStringAsync(cts);
             var statusCode = (int)response.StatusCode;
-            return GetOperationResultResponse<Address[]>(statusCode, responseContent)!;
+            return GetOperationResultResponse<User[]>(statusCode, responseContent)!;
         }
 
-        public async Task<OperationResult<Address>> ReadOne(long id, CancellationToken cts)
+        public async Task<OperationResult<User>> ReadOne(long id, CancellationToken cts)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var response = await _retryPolicy.ExecuteAsync(() =>
@@ -95,21 +95,18 @@ namespace OrderApiGate.Addresses.Service
 
             var responseContent = await response.Content.ReadAsStringAsync(cts);
             var statusCode = (int)response.StatusCode;
-            return GetOperationResultResponse<Address>(statusCode, responseContent)!;
+            return GetOperationResultResponse<User>(statusCode, responseContent)!;
         }
 
-        public async Task<OperationResult<None>> Update(long id, WriteAddress value, CancellationToken cts)
+        public async Task<OperationResult<None>> Update(long id, WriteUser value, CancellationToken cts)
         {
             try
             {
-                Address add = new Address()
+                User add = new User()
                 {
-                    AddressId = id,
-                    Street = value.Street,
-                    City = value.City,
-                    State = value.State,
-                    Country = value.Country,
-                    ZipCode = value.ZipCode,
+                    UserId = id,
+                    Name = value.Name,
+                    Email = value.Email
                 };
                 var httpClient = _httpClientFactory.CreateClient();
                 var response = await _retryPolicy.ExecuteAsync(() =>

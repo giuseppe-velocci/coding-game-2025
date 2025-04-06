@@ -1,6 +1,4 @@
-﻿using Core;
-
-namespace OrderApiGate
+﻿namespace OrderApiGate
 {
     public class SerializableResult<T>
     {

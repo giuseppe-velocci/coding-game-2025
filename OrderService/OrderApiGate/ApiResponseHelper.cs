@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
-internal static class ApiHandlerHelpers
+internal static class ApiResponseHelper
 {
     private readonly static JsonSerializerOptions serializerOptions = new() { PropertyNameCaseInsensitive = true };
 
@@ -13,7 +13,7 @@ internal static class ApiHandlerHelpers
             var obj = JsonSerializer.Deserialize<ProblemDetails>(responseContent, serializerOptions);
             throw new Exception(obj!.Detail);
         }
-        else if (statusCode > 200)
+        else if (statusCode >= 300)
         {
             var obj = JsonSerializer.Deserialize<ProblemDetails>(responseContent, serializerOptions);
 

@@ -41,6 +41,9 @@ services:
      environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ADDRESS_ENDPOINT=http://addressservice
+      - USERS_ENDPOINT=http://userservice
+      - PRODUCT_ENDPOINT=http://productservice
+      - ORDER_ENDPOINT=http://orderservice
       - ENDPOINTS_PORT=8080
      ports:
       - "${API_GATE_PORT}:8080"
