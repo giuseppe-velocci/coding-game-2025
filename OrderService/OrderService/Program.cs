@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen();
 
 builder
     .Services //TODO verify db filepath + pass as ENV var if possible
-    .AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=Addresses.db"));
+    .AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=Orders.db"));
 
 ApiEndpointConfig config = new(
     Environment.GetEnvironmentVariable("API_GATE_ENDPOINT"),
