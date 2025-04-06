@@ -2,6 +2,13 @@
 {
     public class ApiEndpointConfig
     {
-        public string ApiGatewayEndpoint { get; set; }
+        public ApiEndpointConfig(string url, string port)
+        {
+            ApiGatewayEndpoint = string.IsNullOrEmpty(port) ?
+                url :
+                $"{url}:{port}";
+        }
+
+        public string ApiGatewayEndpoint { get; }
     }
 }

@@ -11,6 +11,8 @@ services:
   orderservice:
      environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - API_GATE_PORT
+      - API_GATE_ENDPOINT=http://localhost
      ports:
       - "${ORDER_PORT}:8080"
      volumes:

@@ -28,24 +28,23 @@ builder
 builder.Services
     .AddScoped<IBaseValidator<Category>, CategoryValidator>()
     .AddScoped<IBaseValidator<Product>, ProductValidator>()
-    .AddScoped<ICrudRepository<Category>,CategoryRepository>()
+    .AddScoped<ICrudRepository<Category>, CategoryRepository>()
     .AddScoped<ICrudRepository<Product>, ProductRepository>()
     .AddScoped<ICrudHandler<Category>, CategoryCrudHandler>()
-    .AddScoped<ICrudHandler<Product>, ProductCrudHandler>()    
-    ;
+    .AddScoped<ICrudHandler<Product>, ProductCrudHandler>();
 
 var app = builder.Build();
-
-// migrate the database (just to simplify the startup of this sample app)
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
-    await db.Database.MigrateAsync();
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // migrate the database (just to simplify the startup of this sample app)
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
+        await db.Database.MigrateAsync();
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

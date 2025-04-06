@@ -20,13 +20,13 @@ builder
     .Services //TODO verify db filepath + pass as ENV var if possible
     .AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=Addresses.db"));
 
-ApiEndpointConfig config = new() { 
-    ApiGatewayEndpoint = Environment.GetEnvironmentVariable("API_GATEWAY_ENDPOINT")
-};
+ApiEndpointConfig config = new(
+    Environment.GetEnvironmentVariable("API_GATE_ENDPOINT"),
+    Environment.GetEnvironmentVariable("API_GATE_PORT")
+);
 
-builder.Services
+builder.Services.AddHttpClient()
     .AddSingleton<ApiEndpointConfig>(config)
-    .AddHttpClient()
     .AddScoped<IBaseValidator<OrderRequest>, OrderRequestValidator>()
     .AddScoped<ICrudRepository<Order>, OrderRepository>()
     .AddScoped<IApiGatewayCaller, ApiGatewayCaller>()
@@ -35,19 +35,20 @@ builder.Services
 
 var app = builder.Build();
 
-// migrate the database (just to simplify the startup of this sample app)
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-    await db.Database.MigrateAsync();
-}
-
 app.MapOrderRequestEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // migrate the database (just to simplify the startup of this sample app)
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+        await db.Database.MigrateAsync();
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.Run();
