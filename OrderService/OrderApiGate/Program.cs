@@ -7,6 +7,9 @@ using OrderApiGate.Addresses.Service;
 using OrderApiGate.Categories;
 using OrderApiGate.Categories.Routing;
 using OrderApiGate.Categories.Service;
+using OrderApiGate.Orders;
+using OrderApiGate.Orders.Routing;
+using OrderApiGate.Orders.Service;
 using OrderApiGate.Products;
 using OrderApiGate.Products.Routing;
 using OrderApiGate.Products.Service;
@@ -43,8 +46,9 @@ builder.Services
     .AddSingleton(config)
     .AddScoped<ICrudHandler<Address, WriteAddress>, AddressApiHandler>()
     .AddScoped<ICrudHandler<User, WriteUser>, UserApiHandler>()
-    .AddScoped<ICrudHandler<Product, WriteProduct>, ProductApiHandler>()
     .AddScoped<ICrudHandler<Category, WriteCategory>, CategoryApiHandler>()
+    .AddScoped<ICrudHandler<Product, WriteProduct>, ProductApiHandler>()
+    .AddScoped<ICrudHandler<Order, WriteOrder>, OrderApiHandler>()
     ;
 
 var app = builder.Build();
@@ -58,7 +62,8 @@ if (app.Environment.IsDevelopment())
 
 app.MapAddressEndpoints();
 app.MapUserEndpoints();
-app.MapProductEndpoints();
 app.MapCategoryEndpoints();
+app.MapProductEndpoints();
+app.MapOrderEndpoints();
 
 app.Run();
