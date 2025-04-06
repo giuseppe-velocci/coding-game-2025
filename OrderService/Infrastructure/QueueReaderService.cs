@@ -20,7 +20,7 @@ namespace Infrastructure
                 await foreach (var message in reader.ReadAllAsync(stoppingToken))
                 {
                     _logger.LogDebug("Reader: Read value {@message}", message);
-                    await _handler.Handle(message);
+                    await _handler.Handle(message, stoppingToken);
                 }
             }
             catch (Exception ex)

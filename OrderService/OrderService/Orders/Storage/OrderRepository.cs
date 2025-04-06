@@ -7,15 +7,6 @@ namespace OrderService.Orders.Storage
     {
         public async Task<OperationResult<long>> Create(Order value, CancellationToken cts)
         {
-            if (value.User is not null)
-            {
-                _context.Entry(value.User).State = EntityState.Unchanged;
-            }
-            if (value.Address is not null)
-            {
-                _context.Entry(value.Address).State = EntityState.Unchanged;
-            }
-
             value.IsActive = true;
             await _context.Orders.AddAsync(value, cts);
             await _context.SaveChangesAsync(cts);
@@ -26,10 +17,7 @@ namespace OrderService.Orders.Storage
         public async Task<OperationResult<Order>> ReadOne(long id, CancellationToken cts)
         {
             var product = await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.Address)
                 .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == id, cts);
 
             return product == null ?
@@ -40,10 +28,7 @@ namespace OrderService.Orders.Storage
         public Task<OperationResult<Order[]>> ReadAll(CancellationToken cts)
         {
             return _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.Address)
                 .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
                 .ToArrayAsync(cts)
                 .ContinueWith(x =>
                 {
@@ -63,15 +48,6 @@ namespace OrderService.Orders.Storage
             }
             else if (existingOrder.Value.IsActive)
             {
-                if (value.User is not null)
-                {
-                    _context.Entry(value.User).State = EntityState.Unchanged;
-                }
-                if (value.Address is not null)
-                {
-                    _context.Entry(value.Address).State = EntityState.Unchanged;
-                }
-
                 // user cannot be modified
                 var entry = _context.Entry(existingOrder.Value);
                 if (entry.Property(x => x.UserId).IsModified)

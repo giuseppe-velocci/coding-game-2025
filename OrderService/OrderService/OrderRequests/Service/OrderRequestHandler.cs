@@ -1,19 +1,13 @@
 ﻿using Core;
-using OrderService.Addresses;
+using OrderService.OrderRequests.ExternalModels;
 using OrderService.Orders;
-using OrderService.Products;
-using OrderService.Users;
-using System.Text;
 
 namespace OrderService.OrderRequests.Service
 {
     public class OrderRequestHandler(
         IBaseValidator<OrderRequest> _validator,
         ICrudRepository<Order> _orderRepo,
-        ICrudRepository<User> _userRepo,
-        ICrudRepositoryWithReadMany<Product> _productRepo,
-        ICrudRepository<Address> _addressRepo,
-        IQueueWriter<EventMessage> _queueWriter
+        IApiGatewayCaller _apicaller
     ) : ICrudHandler<OrderRequest>
     {
         public async Task<OperationResult<long>> Create(OrderRequest value, CancellationToken cts)
@@ -24,50 +18,40 @@ namespace OrderService.OrderRequests.Service
                 return new ValidationFailureResult<long>(validation.Message);
             }
 
-            // need to gather data from the various local storages
-            var productIds = value.ProductIds.Select(x => x.ProductId).ToArray();
-            var user = _userRepo.ReadOne(value.UserId, cts);
-            var address = _addressRepo.ReadOne(value.AddressId, cts);
-            var products = _productRepo.ReadMany(productIds, cts);
-
-            await Task.WhenAll(user, address, products);
-            if (RequestIsValid(value, user, address, products))
+            var user = _apicaller.GetUserAsync(value.UserId, cts);
+            var address = _apicaller.GetAddressAsync(value.AddressId, cts);
+            await Task.WhenAll(user, address);
+            if (user is null || address is null)
             {
-                return await CreateOrder(_orderRepo, value, products, cts);
+                return new ValidationFailureResult<long>(user is null ? "User not found" : "Address not found");
+            }
+
+            var productIds = value.ProductIds.Select(x => x.ProductId).ToArray();
+            var productRequestBatches = ChunkArray(productIds, 4);
+            List<Product> fetchedProducts = new();
+            foreach (var productBatch in productRequestBatches)
+            {
+                var run = productBatch.Select(x => _apicaller.GetProductAsync(x, cts));
+                await Task.WhenAll(run);
+                fetchedProducts.AddRange(run.Select(x => x.Result).Where(x => x is not null)!);
+            }
+
+            if (fetchedProducts.Count == value.ProductIds.Count)
+            {
+                return await CreateOrder(_orderRepo, value, fetchedProducts, cts);
             }
             else
             {
-                StringBuilder errorsSb = new();
-
-                if (!user.Result.Success && user.Result is NotFoundResult<User>)
-                {
-                    await SendUserNotFoundEvent(_queueWriter, value, errorsSb, cts);
-                }
-
-                if (!address.Result.Success && address.Result is NotFoundResult<Address>)
-                {
-                    await SendAddressNotFoundEvent(_queueWriter, value, errorsSb, cts);
-                }
-
-                if (products.Result.Value is not null && products.Result.Value.Length < value.ProductIds.Count)
-                {
-                    await SendProductsNotFoundEvent(_queueWriter, productIds, products, errorsSb, cts);
-                }
-
-                // retry policy will allow the client to try again
-                return new InvalidRequestResult<long>($"Some data in the request was not found: {errorsSb}");
+                var missingIds = productIds.Except(fetchedProducts.Select(x => x.ProductId));
+                return new ValidationFailureResult<long>($"Invalid products: {string.Join(", ", missingIds)}");
             }
+        }
 
-            static bool RequestIsValid(
-                OrderRequest value,
-                Task<OperationResult<User>> user,
-                Task<OperationResult<Address>> address,
-                Task<OperationResult<Product[]>> products)
+        private static IEnumerable<T[]> ChunkArray<T>(T[] array, int chunkSize)
+        {
+            for (int i = 0; i < array.Length; i += chunkSize)
             {
-                return user.Result.Success
-                    && address.Result.Success
-                    && products.Result.Success
-                    && products.Result.Value?.Length == value.ProductIds.Count;
+                yield return array.Skip(i).Take(chunkSize).ToArray();
             }
         }
 
@@ -91,38 +75,13 @@ namespace OrderService.OrderRequests.Service
             throw new NotImplementedException();
         }
 
-        private static async Task SendProductsNotFoundEvent(IQueueWriter<EventMessage> _queueWriter, long[] productIds, Task<OperationResult<Product[]>> products, StringBuilder errorsSb, CancellationToken cts)
+        private static async Task<OperationResult<long>> CreateOrder(
+            ICrudRepository<Order> _orderRepo,
+            OrderRequest value,
+            IEnumerable<Product> products,
+            CancellationToken cts)
         {
-            var missingProducts = CompareArrays(
-                products.Result.Value?.Select(x => x.ProductId).ToArray() ?? [],
-                productIds);
-            foreach (var productId in missingProducts)
-            {
-                await _queueWriter.Send(EventMessage.ProductNotFound(productId), cts);
-                errorsSb.Append($"ProductId {productId} ");
-            }
-
-            static long[] CompareArrays(long[] first, long[] second)
-            {
-                return second.Except(first).ToArray();
-            }
-        }
-
-        private static async Task SendAddressNotFoundEvent(IQueueWriter<EventMessage> _queueWriter, OrderRequest value, StringBuilder errorsSb, CancellationToken cts)
-        {
-            await _queueWriter.Send(EventMessage.AddressNotFound(value.AddressId), cts);
-            errorsSb.Append($"AddressId {value.AddressId} ");
-        }
-
-        private static async Task SendUserNotFoundEvent(IQueueWriter<EventMessage> _queueWriter, OrderRequest value, StringBuilder errorsSb, CancellationToken cts)
-        {
-            await _queueWriter.Send(EventMessage.UserNotFound(value.UserId), cts);
-            errorsSb.Append($"UserId {value.UserId} ");
-        }
-
-        private static async Task<OperationResult<long>> CreateOrder(ICrudRepository<Order> _orderRepo, OrderRequest value, Task<OperationResult<Product[]>> products, CancellationToken cts)
-        {
-            var orderDetails = products.Result.Value!
+            var orderDetails = products
                 .Select((x, i) => new OrderDetail()
                 {
                     ProductId = x.ProductId,

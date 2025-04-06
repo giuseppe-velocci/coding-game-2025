@@ -14,14 +14,13 @@ namespace OrderService.Orders
 
         public long ProductId { get; set; }
 
+        public long ProductName { get; set; }
+
         public int Quantity { get; set; }
 
         public decimal UnitPrice { get; set; }
 
         [ForeignKey("OrderId")]
         public Order Order { get; set; }
-
-        [ForeignKey("ProductId")]
-        public Product Product { get; set; }
     }
 }

@@ -6,8 +6,8 @@
 
         public long UserId { get; set; }
 
-        public List<OrderProduct> ProductIds { get; set; } = new();
-
         public long AddressId { get; set; }
+
+        public List<OrderProduct> ProductIds { get; set; } = new();
     }
 }

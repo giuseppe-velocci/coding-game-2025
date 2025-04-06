@@ -3,16 +3,17 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Retry;
+using System.Text.Json;
 
 namespace Infrastructure
 {
-    public class HttpClientService : IHttpClientService
+    public class HttpApiClientService : IHttpClientService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<HttpClientService> _logger;
+        private readonly ILogger<HttpApiClientService> _logger;
         private readonly AsyncRetryPolicy<HttpResponseMessage> _retryPolicy;
 
-        public HttpClientService(IHttpClientFactory httpClientFactory, ILogger<HttpClientService> logger)
+        public HttpApiClientService(IHttpClientFactory httpClientFactory, ILogger<HttpApiClientService> logger)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -31,17 +32,19 @@ namespace Infrastructure
                     });
         }
 
-        public async Task<string> CallEndpointAsync(string endpointUrl)
+        public async Task<T?> CallEndpointAsync<T>(string endpointUrl, CancellationToken cts)
         {
             try
             {
                 var httpClient = _httpClientFactory.CreateClient();
                 var response = await _retryPolicy.ExecuteAsync(() =>
-                    httpClient.GetAsync(endpointUrl));
+                    httpClient.GetAsync(endpointUrl, cts));
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadAsStringAsync();
+                    var res = await response.Content.ReadAsStringAsync(cts);
+                    var obj = JsonSerializer.Deserialize<T>(res);
+                    return obj;
                 }
                 else
                 {
@@ -53,7 +56,7 @@ namespace Infrastructure
                 _logger.LogError(ex, "Exception occurred during http call");
             }
 
-            return string.Empty;
+            return default;
         }
     }
 }

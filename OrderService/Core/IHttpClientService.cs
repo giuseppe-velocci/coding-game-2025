@@ -2,6 +2,6 @@
 {
     public interface IHttpClientService
     {
-        Task<string> CallEndpointAsync(string endpointUrl);
+        Task<T?> CallEndpointAsync<T>(string endpointUrl, CancellationToken cts);
     }
 }

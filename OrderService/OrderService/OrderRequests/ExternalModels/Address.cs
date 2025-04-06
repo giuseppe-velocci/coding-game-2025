@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace OrderService.Addresses
+namespace OrderService.OrderRequests.ExternalModels
 {
     public class Address
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long AddressId { get; set; }
 
         [MaxLength(200)]
@@ -22,7 +23,6 @@ namespace OrderService.Addresses
 
         [MaxLength(20)]
         public string ZipCode { get; set; }
-
-        public bool IsActive { get; set; } // for logical deletes
     }
+
 }
