@@ -1,7 +1,10 @@
-﻿namespace OrderService.OrderRequests
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace OrderService.OrderRequests
 {
     public class OrderRequest
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long OrderId { get; set; }
 
         public long UserId { get; set; }
