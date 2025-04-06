@@ -25,3 +25,10 @@ services:
       context: .
       dockerfile: UserService/Dockerfile
 
+
+  orderapigate:
+    image: ${DOCKER_REGISTRY-}orderapigate
+    build:
+      context: .
+      dockerfile: OrderApiGate/Dockerfile
+

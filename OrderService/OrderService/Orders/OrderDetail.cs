@@ -1,5 +1,4 @@
-﻿using OrderService.Products;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderService.Orders
@@ -14,7 +13,7 @@ namespace OrderService.Orders
 
         public long ProductId { get; set; }
 
-        public long ProductName { get; set; }
+        public string ProductName { get; set; }
 
         public int Quantity { get; set; }
 

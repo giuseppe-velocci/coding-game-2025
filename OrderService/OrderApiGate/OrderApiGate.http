@@ -1,0 +1,6 @@
+@OrderApiGate_HostAddress = http://localhost:5077
+
+GET {{OrderApiGate_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

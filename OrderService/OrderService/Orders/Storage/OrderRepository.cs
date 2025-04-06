@@ -48,8 +48,15 @@ namespace OrderService.Orders.Storage
             }
             else if (existingOrder.Value.IsActive)
             {
-                // user cannot be modified
                 var entry = _context.Entry(existingOrder.Value);
+                
+                // isActive cannot be modified
+                if (entry.Property(x => x.IsActive).IsModified)
+                {
+                    return new ValidationFailureResult<None>($"Order cannot be reset to Active state when cancelled");
+                }
+
+                // user cannot be modified
                 if (entry.Property(x => x.UserId).IsModified)
                 {
                     return new ValidationFailureResult<None>($"UserId cannot be modified for an Order");
