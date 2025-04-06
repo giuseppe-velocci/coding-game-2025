@@ -8,7 +8,7 @@ namespace OrderService.OrderRequests.Service
         IBaseValidator<OrderRequest> _validator,
         ICrudRepository<Order> _orderRepo,
         IApiGatewayCaller _apicaller
-    )
+    ) : IOrderRequestHandler
     {
         public async Task<OperationResult<long>> Create(OrderRequest value, CancellationToken cts)
         {
@@ -83,7 +83,7 @@ namespace OrderService.OrderRequests.Service
                 var missingIds = productIds.Except(fetchedProducts.Select(x => x.ProductId));
                 return new ValidationFailureResult<None>($"Invalid products: {string.Join(", ", missingIds)}");
             }
-            
+
         }
 
         private static Order CreateOrderObject(OrderRequest value, IEnumerable<Product> products)

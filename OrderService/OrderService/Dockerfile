@@ -7,6 +7,7 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ENV API_GATEWAY_ENDPOINT="http://localhost:5678"
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

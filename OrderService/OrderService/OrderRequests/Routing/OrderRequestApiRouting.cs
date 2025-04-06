@@ -1,6 +1,8 @@
 ﻿using Core;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.OrderRequests.Service;
+using OrderService.Orders;
 
 namespace OrderService.OrderRequests.Routing
 {
@@ -12,7 +14,7 @@ namespace OrderService.OrderRequests.Routing
         {
             app.MapPost(path, async (
                 [FromBody] OrderRequest OrderRequest,
-                ICrudHandler<OrderRequest> handler,
+                IOrderRequestHandler handler,
                 CancellationToken cts) =>
                 {
                     var result = await handler.Create(OrderRequest, cts);
@@ -20,23 +22,23 @@ namespace OrderService.OrderRequests.Routing
                 });
 
             app.MapGet(path, async (
-                ICrudHandler<OrderRequest> handler,
+                IOrderRequestHandler handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.ReadAll(cts);
-                return result.Accept(new HttpResponseResultVisitor<OrderRequest[]>());
+                return result.Accept(new HttpResponseResultVisitor<Order[]>());
             });
 
-            app.MapGet($"{path}/{{id:long}}", async (long id, ICrudHandler<OrderRequest> handler, CancellationToken cts) =>
+            app.MapGet($"{path}/{{id:long}}", async (long id, IOrderRequestHandler handler, CancellationToken cts) =>
             {
                 var result = await handler.ReadOne(id, cts);
-                return result.Accept(new HttpResponseResultVisitor<OrderRequest>());
+                return result.Accept(new HttpResponseResultVisitor<Order>());
             });
 
             app.MapPut($"{path}/{{id:long}}", async (
                 long id,
                 [FromBody] OrderRequest updatedCategory,
-                ICrudHandler<OrderRequest> handler,
+                IOrderRequestHandler handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Update(id, updatedCategory, cts);
@@ -45,7 +47,7 @@ namespace OrderService.OrderRequests.Routing
 
             app.MapDelete($"{path}/{{id:long}}", async (
                 int id,
-                ICrudHandler<OrderRequest> handler,
+                IOrderRequestHandler handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Delete(id, cts);

@@ -1,4 +1,13 @@
-using System.Threading.Channels;
+using Core;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using OrderService;
+using OrderService.OrderRequests;
+using OrderService.OrderRequests.Routing;
+using OrderService.OrderRequests.Service;
+using OrderService.OrderRequests.Validation;
+using OrderService.Orders;
+using OrderService.Orders.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,11 +16,33 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var channel = Channel.CreateUnbounded<int>();
-builder.Services.AddSingleton(channel);
+builder
+    .Services //TODO verify db filepath + pass as ENV var if possible
+    .AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=Addresses.db"));
 
+ApiEndpointConfig config = new() { 
+    ApiGatewayEndpoint = Environment.GetEnvironmentVariable("API_GATEWAY_ENDPOINT")
+};
+
+builder.Services
+    .AddSingleton<ApiEndpointConfig>(config)
+    .AddHttpClient()
+    .AddScoped<IBaseValidator<OrderRequest>, OrderRequestValidator>()
+    .AddScoped<ICrudRepository<Order>, OrderRepository>()
+    .AddScoped<IApiGatewayCaller, ApiGatewayCaller>()
+    .AddScoped<IHttpClientService, HttpApiClientService>()
+    .AddScoped<IOrderRequestHandler, OrderRequestHandler>();
 
 var app = builder.Build();
+
+// migrate the database (just to simplify the startup of this sample app)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+    await db.Database.MigrateAsync();
+}
+
+app.MapOrderRequestEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
