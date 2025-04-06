@@ -11,8 +11,5 @@ namespace ProductService.Categories
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long CategoryId { get; set; }
         public string Name { get; set; }
-
-        [JsonIgnore]
-        public ICollection<Product> Products { get; set; }
     }
 }

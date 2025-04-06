@@ -1,8 +1,6 @@
 ﻿using ProductService.Categories;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-
 namespace ProductService.Products
 {
     public class Product
@@ -14,7 +12,6 @@ namespace ProductService.Products
         public decimal Price { get; set; }
         public long CategoryId { get; set; }
 
-        [JsonIgnore]
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
     }
