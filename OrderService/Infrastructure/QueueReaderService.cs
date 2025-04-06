@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Core;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Channels;
 
@@ -6,7 +7,7 @@ namespace Infrastructure
 {
     public class QueueReaderService<T>(
         Channel<T> _channel,
-        IQueueRedeaderHandler<T> _handler,
+        IQueueReaderHandler<T> _handler,
         ILogger<QueueReaderService<T>> _logger
     ) : BackgroundService
     {
