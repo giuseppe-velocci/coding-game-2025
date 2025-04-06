@@ -5,6 +5,8 @@ using AddressService.Addresses.Service;
 using AddressService.Addresses.Storage;
 using AddressService.Addresses.Validation;
 using Core;
+using Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +23,7 @@ builder
 
 builder.Services
     .AddScoped<IBaseValidator<Address>, AddressValidator>()
-    .AddScoped<ICrudRepository<Address>, AddressRepository>()
+    .AddScoped<ICrudRepository<Address>, AddressRepository<SqliteException>>()
     .AddScoped<ICrudHandler<Address>, AddressCrudHandler>()
 ;
 var app = builder.Build();

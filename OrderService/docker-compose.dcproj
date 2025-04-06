@@ -7,7 +7,7 @@
     <ProjectGuid>8d54f3af-3d37-44b8-a746-35f111d85201</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>addressservice</DockerServiceName>
+    <DockerServiceName>orderapigate</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include=".env" />

@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -22,7 +23,7 @@ builder
 
 ApiEndpointConfig config = new(
     Environment.GetEnvironmentVariable("API_GATE_ENDPOINT"),
-    Environment.GetEnvironmentVariable("API_GATE_PORT")
+    Environment.GetEnvironmentVariable("ENDPOINTS_PORT")
 );
 
 builder.Services.AddHttpClient()

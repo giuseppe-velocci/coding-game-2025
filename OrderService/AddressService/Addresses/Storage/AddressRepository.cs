@@ -3,12 +3,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AddressService.Addresses.Storage
 {
-    public class AddressRepository(AddressDbContext _context) : ICrudRepository<Address>
+    public class AddressRepository<TException>(AddressDbContext _context) : ICrudRepository<Address>
+        where TException : Exception
     {
         public async Task<OperationResult<long>> Create(Address value, CancellationToken cts)
         {
-            await _context.Addresses.AddAsync(value, cts);
-            await _context.SaveChangesAsync(cts);
+            try
+            {
+                await _context.Addresses.AddAsync(value, cts);
+                await _context.SaveChangesAsync(cts);
+            }
+            catch (DbUpdateException ex)
+            {
+                return new InvalidRequestResult<long>(ex.Message);
+            }
+            catch (TException)
+            {
+                return new InvalidRequestResult<long>("Unexpected exception");
+            }
             return new SuccessResult<long>(value.AddressId);
         }
 
@@ -35,36 +47,59 @@ namespace AddressService.Addresses.Storage
 
         public async Task<OperationResult<None>> Update(long id, Address value, CancellationToken cts)
         {
-            var storedValue = await _context.Addresses.FindAsync(id, cts);
-            if (storedValue == null)
+            try
             {
-                return new NotFoundResult<None>("Failed reading adresses");
+
+                var storedValue = await _context.Addresses.FindAsync(id, cts);
+                if (storedValue == null)
+                {
+                    return new NotFoundResult<None>("Failed reading adresses");
+                }
+
+                storedValue.Street = value.Street;
+                storedValue.City = value.City;
+                storedValue.Country = value.Country;
+                storedValue.State = value.State;
+                storedValue.ZipCode = value.ZipCode;
+
+                await _context.SaveChangesAsync(cts);
+                return new SuccessResult<None>(None.Instance());
             }
-
-            storedValue.Street = value.Street;
-            storedValue.City = value.City;
-            storedValue.Country = value.Country;
-            storedValue.State = value.State;
-            storedValue.ZipCode = value.ZipCode;
-
-            await _context.SaveChangesAsync(cts);
-            return new SuccessResult<None>(None.Instance());
+            catch (DbUpdateException ex)
+            {
+                return new InvalidRequestResult<None>(ex.Message);
+            }
+            catch (TException)
+            {
+                return new InvalidRequestResult<None>("Unexpected exception");
+            }
         }
 
         public async Task<OperationResult<None>> Delete(long id, CancellationToken cts)
         {
-            var record = await _context.Addresses.FindAsync(id, cts);
-            if (record == null)
+            try
             {
-                return new NotFoundResult<None>($"Address {id} Not found");
-            }
-            else
-            {
-                _context.Addresses.Remove(record);
-                await _context.SaveChangesAsync(cts);
-            }
+                var record = await _context.Addresses.FindAsync(id, cts);
+                if (record == null)
+                {
+                    return new NotFoundResult<None>($"Address {id} Not found");
+                }
+                else
+                {
+                    _context.Addresses.Remove(record);
+                    await _context.SaveChangesAsync(cts);
+                }
 
-            return new SuccessResult<None>(None.Instance());
+                return new SuccessResult<None>(None.Instance());
+            }
+            catch (DbUpdateException ex)
+            {
+                return new InvalidRequestResult<None>(ex.Message);
+            }
+            catch (TException)
+            {
+                return new InvalidRequestResult<None>("Unexpected exception");
+            }
         }
     }
 }

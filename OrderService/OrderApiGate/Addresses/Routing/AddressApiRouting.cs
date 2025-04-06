@@ -2,7 +2,7 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AddressService.Addresses.Routing
+namespace OrderApiGate.Addresses.Routing
 {
     public static class AddressApiRouting
     {
@@ -11,8 +11,8 @@ namespace AddressService.Addresses.Routing
         public static IEndpointRouteBuilder MapAddressEndpoints(this IEndpointRouteBuilder app)
         {
             app.MapPost(path, async (
-                [FromBody] Address category,
-                ICrudHandler<Address> handler,
+                [FromBody] WriteAddress category,
+                ICrudHandler<Address, WriteAddress> handler,
                 CancellationToken cts) =>
                 {
                     var result = await handler.Create(category, cts);
@@ -20,7 +20,7 @@ namespace AddressService.Addresses.Routing
                 });
 
             app.MapGet(path, async (
-                ICrudHandler<Address> handler,
+                ICrudHandler<Address, WriteAddress> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.ReadAll(cts);
@@ -29,7 +29,7 @@ namespace AddressService.Addresses.Routing
 
             app.MapGet($"{path}/{{id:long}}", async (
                 long id,
-                ICrudHandler<Address> handler,
+                ICrudHandler<Address, WriteAddress> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.ReadOne(id, cts);
@@ -38,8 +38,8 @@ namespace AddressService.Addresses.Routing
 
             app.MapPut($"{path}/{{id:long}}", async (
                 long id,
-                [FromBody] Address updatedCategory,
-                ICrudHandler<Address> handler,
+                [FromBody] WriteAddress updatedCategory,
+                ICrudHandler<Address, WriteAddress> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Update(id, updatedCategory, cts);
@@ -48,7 +48,7 @@ namespace AddressService.Addresses.Routing
 
             app.MapDelete($"{path}/{{id:long}}", async (
                 long id,
-                ICrudHandler<Address> handler,
+                ICrudHandler<Address, WriteAddress> handler,
                 CancellationToken cts) =>
             {
                 var result = await handler.Delete(id, cts);

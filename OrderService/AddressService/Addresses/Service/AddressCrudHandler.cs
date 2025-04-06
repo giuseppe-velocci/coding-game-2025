@@ -1,5 +1,4 @@
-﻿using AddressService.Addresses;
-using Core;
+﻿using Core;
 using Infrastructure;
 
 namespace AddressService.Addresses.Service

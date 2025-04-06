@@ -1,35 +1,17 @@
 ﻿using Core;
 using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Extensions.Http;
-using Polly.Retry;
 using System.Text.Json;
 
 namespace Infrastructure
 {
-    public class HttpApiClientService : IHttpClientService
+    public class HttpApiClientService : AsbtractHttpApiClientService, IHttpClientService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<HttpApiClientService> _logger;
-        private readonly AsyncRetryPolicy<HttpResponseMessage> _retryPolicy;
 
         public HttpApiClientService(IHttpClientFactory httpClientFactory, ILogger<HttpApiClientService> logger)
+            :base(httpClientFactory, logger)
         {
-            _httpClientFactory = httpClientFactory;
             _logger = logger;
-
-            _retryPolicy = HttpPolicyExtensions
-                .HandleTransientHttpError()
-                .WaitAndRetryAsync(
-                    retryCount: 3,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    onRetry: (outcome, timespan, retryAttempt, context) =>
-                    {
-                        _logger.LogDebug("Retry {retryAttempt} after {timespan} seconds due to {ex}",
-                            retryAttempt,
-                            timespan.TotalSeconds,
-                            outcome.Exception?.Message ?? outcome.Result.StatusCode.ToString());
-                    });
         }
 
         public async Task<T?> CallEndpointAsync<T>(string endpointUrl, CancellationToken cts)
