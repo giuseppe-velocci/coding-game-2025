@@ -5,7 +5,7 @@ using OrderService.Products;
 
 namespace ProductService.Products.Storage
 {
-    public class ProductRepository(OrderDbContext _context) : ICrudRepository<Product>
+    public class ProductRepository(OrderDbContext _context) : ICrudRepositoryWithReadMany<Product>
     {
         public async Task<OperationResult<long>> Create(Product value, CancellationToken cts)
         {
@@ -25,6 +25,20 @@ namespace ProductService.Products.Storage
         public Task<OperationResult<Product[]>> ReadAll(CancellationToken cts)
         {
             return _context.Products
+                .ToArrayAsync(cts)
+                .ContinueWith(x =>
+                {
+                    OperationResult<Product[]> res = x.IsCompletedSuccessfully ?
+                        new SuccessResult<Product[]>(x.Result) :
+                        new CriticalFailureResult<Product[]>("Failed reading products");
+                    return res;
+                });
+        }
+
+        public Task<OperationResult<Product[]>> ReadMany(IEnumerable<long> ids, CancellationToken cts)
+        {
+            return _context.Products
+                .Where(x => ids.Contains(x.ProductId))
                 .ToArrayAsync(cts)
                 .ContinueWith(x =>
                 {

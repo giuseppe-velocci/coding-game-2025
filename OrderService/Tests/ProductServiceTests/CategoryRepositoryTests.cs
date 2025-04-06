@@ -6,19 +6,15 @@ using ProductService.Categories.Storage;
 
 namespace ProductServiceTests
 {
-    public class CategoryRepositoryTests : IClassFixture<CategoryRepositoryFixture>
+    public class CategoryRepositoryTests
     {
-        private readonly CategoryRepositoryFixture _fixture;
-
-        public CategoryRepositoryTests(CategoryRepositoryFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
         [Fact]
         public async Task Create_Should_Add_Category_To_Database()
         {
             // Arrange
+            using var context = CreateInMemoryDbContext();
+            var sut = new CategoryRepository(context);
+
             Category cat = new() { Name = "Cat1", CategoryId = 10 };
             var product = new Category
             {
@@ -27,8 +23,8 @@ namespace ProductServiceTests
             };
 
             // Act
-            var result = await _fixture._sut.Create(product, CancellationToken.None);
-            var productFromDb = await _fixture._context.Categories.FirstOrDefaultAsync(p => p.CategoryId == 1);
+            var result = await sut.Create(product, CancellationToken.None);
+            var productFromDb = await context.Categories.FirstOrDefaultAsync(p => p.CategoryId == 1);
 
             // Assert
             Assert.IsType<SuccessResult<long>>(result);
@@ -41,7 +37,8 @@ namespace ProductServiceTests
         public async Task ReadAll_Should_Return_All_Categories_From_Database()
         {
             //Arrange
-            var fixture = new CategoryRepositoryFixture();
+            using var context = CreateInMemoryDbContext();
+            var sut = new CategoryRepository(context);
 
             Category[] entities =
             {
@@ -49,11 +46,11 @@ namespace ProductServiceTests
                 new Category { CategoryId = 20, Name = "P2" },
                 new Category { CategoryId = 30, Name = "P3" }
             };
-            fixture._context.Categories.AddRange(entities);
-            fixture._context.SaveChanges();
+            context.Categories.AddRange(entities);
+            context.SaveChanges();
 
             //Act
-            var result = await fixture._sut.ReadAll(CancellationToken.None);
+            var result = await sut.ReadAll(CancellationToken.None);
 
             //Assert
             Assert.Equal(entities, result.Value);
@@ -63,13 +60,16 @@ namespace ProductServiceTests
         public async Task ReadOne_Should_Return_Category_When_Id_Exists()
         {
             // Arrange
+            using var context = CreateInMemoryDbContext();
+            var sut = new CategoryRepository(context);
+
             var categoryId = 40;
             Category cat = new() { Name = "Cat1", CategoryId = categoryId };
-            _fixture._context.Add(cat);
-            _fixture._context.SaveChanges();
+            context.Add(cat);
+            context.SaveChanges();
 
             // Act
-            var result = await _fixture._sut.ReadOne(categoryId, CancellationToken.None);
+            var result = await sut.ReadOne(categoryId, CancellationToken.None);
 
             // Assert
             Assert.IsType<SuccessResult<Category>>(result);
@@ -79,8 +79,12 @@ namespace ProductServiceTests
         [Fact]
         public async Task ReadOne_Should_Return_NotFound_When_Id_Does_Not_Exist()
         {
+            //Arrange
+            using var context = CreateInMemoryDbContext();
+            var sut = new CategoryRepository(context);
+
             // Act
-            var result = await _fixture._sut.ReadOne(999, CancellationToken.None);
+            var result = await sut.ReadOne(999, CancellationToken.None);
 
             // Assert
             Assert.IsType<NotFoundResult<Category>>(result);
@@ -91,16 +95,19 @@ namespace ProductServiceTests
         public async Task Update_Should_Modify_Category_When_Id_Exists()
         {
             // Arrange
+            using var context = CreateInMemoryDbContext();
+            var sut = new CategoryRepository(context);
+
             string expectedName = "Cat2";
             int categoryId = 90;
             Category cat = new() { Name = "Cat1", CategoryId = categoryId };
             Category cat1 = new() { Name = expectedName };
-            _fixture._context.Add(cat);
-            _fixture._context.SaveChanges();
+            context.Add(cat);
+            context.SaveChanges();
 
             // Act
-            var result = await _fixture._sut.Update(categoryId, cat1, CancellationToken.None);
-            var updated = await _fixture._context.Categories.FirstAsync(x => x.CategoryId == cat.CategoryId);
+            var result = await sut.Update(categoryId, cat1, CancellationToken.None);
+            var updated = await context.Categories.FirstAsync(x => x.CategoryId == cat.CategoryId);
 
             // Assert
             Assert.IsType<SuccessResult<None>>(result);
@@ -111,42 +118,28 @@ namespace ProductServiceTests
         public async Task Delete_Should_Remove_Category_When_Id_Exists()
         {
             // Arrange
+            using var context = CreateInMemoryDbContext();
+            var sut = new CategoryRepository(context);
+
             Category cat = new() { Name = "Cat1", CategoryId = 150 };
-            _fixture._context.Add(cat);
-            _fixture._context.SaveChanges();
+            context.Add(cat);
+            context.SaveChanges();
 
             // Act
-            var result = await _fixture._sut.Delete(cat.CategoryId, CancellationToken.None);
-            var found = await _fixture._context.Categories.FirstOrDefaultAsync(x => x.CategoryId == cat.CategoryId);
+            var result = await sut.Delete(cat.CategoryId, CancellationToken.None);
+            var found = await context.Categories.FirstOrDefaultAsync(x => x.CategoryId == cat.CategoryId);
 
             // Assert
             Assert.IsType<SuccessResult<None>>(result);
             Assert.Null(found);
         }
-    }
 
-    public class CategoryRepositoryFixture : IDisposable
-    {
-        public ProductDbContext _context { get; private set; }
-        public CategoryRepository _sut { get; private set; }
-
-        public CategoryRepositoryFixture()
+        private static ProductDbContext CreateInMemoryDbContext()
         {
-            // Configure in-memory database
             var options = new DbContextOptionsBuilder<ProductDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
-
-            // Initialize context
-            _context = new(options);
-
-            // Initialize the SUT
-            _sut = new(_context);
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
+            return new ProductDbContext(options);
         }
     }
 }

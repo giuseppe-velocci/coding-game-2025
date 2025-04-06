@@ -1,6 +1,5 @@
 ﻿using Core;
 using Infrastructure;
-using UserService.AddressReferences;
 
 namespace UserService.AddressReferences.Service
 {
@@ -9,7 +8,7 @@ namespace UserService.AddressReferences.Service
         ICrudRepository<AddressReference> _repo
     ) : CrudHandlerBase<AddressReference>(_validator, _repo), ICrudHandler<AddressReference>
     {
-        public override async Task<OperationResult<None>> Update(long id, AddressReference value, CancellationToken cts)
+        public override Task<OperationResult<None>> Update(long id, AddressReference value, CancellationToken cts)
         {
             throw new NotImplementedException();
         }
