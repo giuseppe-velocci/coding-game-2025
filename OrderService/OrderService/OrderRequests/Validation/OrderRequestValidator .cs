@@ -11,9 +11,6 @@ namespace OrderService.OrderRequests.Validation
     {
         protected override void SetupValidation()
         {
-            RuleFor(order => order.OrderId)
-            .GreaterThan(0).WithMessage("OrderId must be greater than 0.");
-
             RuleFor(order => order.UserId)
                 .GreaterThan(0).WithMessage("UserId must be greater than 0.");
 
