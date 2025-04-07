@@ -10,7 +10,7 @@ using ProductService;
 namespace ProductService.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    [Migration("20250407122324_FirstMigration")]
+    [Migration("20250407181741_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -23,6 +23,9 @@ namespace ProductService.Migrations
                 {
                     b.Property<long>("CategoryId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")

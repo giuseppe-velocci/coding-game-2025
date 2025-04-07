@@ -9,9 +9,22 @@ namespace ProductService.Products.Storage
         {
             try
             {
-                await _context.Products.AddAsync(value, cts);
-                await _context.SaveChangesAsync(cts);
-                return new SuccessResult<long>(value.ProductId);
+                var isCategoryValid = await _context.Categories
+                        .Where(x => x.CategoryId == value.CategoryId)
+                        .Select(x => x.IsActive)
+                        .FirstOrDefaultAsync(cts);
+
+                if (isCategoryValid)
+                {
+                    await _context.Products.AddAsync(value, cts);
+                    await _context.SaveChangesAsync(cts);
+                    return new SuccessResult<long>(value.ProductId);
+                }
+                else
+                {
+                    return new InvalidRequestResult<long>($"Category {value.CategoryId} is not valid");
+                }
+
             }
             catch (DbUpdateException ex)
             {
@@ -74,7 +87,23 @@ namespace ProductService.Products.Storage
                 }
 
                 storedValue.Name = value.Name;
-                storedValue.CategoryId = value.CategoryId;
+
+                if (storedValue.CategoryId != value.CategoryId)
+                {
+                    var isCategoryValid = await _context.Categories
+                        .Where(x => x.CategoryId == value.CategoryId)
+                        .Select(x => x.IsActive)
+                        .FirstOrDefaultAsync(cts);
+
+                    if (isCategoryValid == true)
+                    {
+                        storedValue.CategoryId = value.CategoryId;
+                    }
+                    else
+                    {
+                        return new InvalidRequestResult<None>($"Category {value.CategoryId} was removed");
+                    }
+                }
 
                 await _context.SaveChangesAsync(cts);
                 return new SuccessResult<None>(None.Instance());

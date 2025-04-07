@@ -9,6 +9,7 @@ namespace ProductService.Categories.Storage
         {
             try
             {
+                value.IsActive = true;
                 await _context.Categories.AddAsync(value, cts);
                 await _context.SaveChangesAsync(cts);
                 return new SuccessResult<long>(value.CategoryId);
@@ -29,8 +30,8 @@ namespace ProductService.Categories.Storage
             {
                 var category = await _context.Categories.FindAsync(id, cts);
                 return category == null ?
-                        new NotFoundResult<Category>($"Category {id} not found") :
-                        new SuccessResult<Category>(category);
+                    new NotFoundResult<Category>($"Category {id} not found") :
+                    new SuccessResult<Category>(category);
             }
             catch (DbUpdateException ex)
             {
@@ -82,7 +83,7 @@ namespace ProductService.Categories.Storage
             }
             else
             {
-                _context.Categories.Remove(category);
+                category.IsActive = false;
                 await _context.SaveChangesAsync(cts);
             }
 

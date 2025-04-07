@@ -46,7 +46,7 @@ services:
       - ORDER_ENDPOINT=http://orderservice
       - ENDPOINTS_PORT=8080
      ports:
-      - "8080"
+      - "55007:8080"
      volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
