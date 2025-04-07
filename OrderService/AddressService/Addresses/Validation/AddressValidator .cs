@@ -1,5 +1,4 @@
-﻿using AddressService.Addresses;
-using FluentValidation;
+﻿using FluentValidation;
 using Infrastructure;
 
 namespace AddressService.Addresses.Validation

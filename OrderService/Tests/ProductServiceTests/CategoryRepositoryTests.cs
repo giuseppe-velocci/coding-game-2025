@@ -115,7 +115,7 @@ namespace ProductServiceTests
         }
 
         [Fact]
-        public async Task Delete_Should_Remove_Category_When_Id_Exists()
+        public async Task Delete_Should_Deactivate_Category_When_Id_Exists()
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
@@ -131,7 +131,7 @@ namespace ProductServiceTests
 
             // Assert
             Assert.IsType<SuccessResult<None>>(result);
-            Assert.Null(found);
+            Assert.False(found.IsActive);
         }
 
         private static ProductDbContext CreateInMemoryDbContext()

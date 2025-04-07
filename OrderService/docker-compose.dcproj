@@ -15,6 +15,9 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="Tests\AddressServiceTests\AddressRepositoryTests.cs" />
+    <None Include="Tests\AddressServiceTests\AddressValidatorTests.cs" />
     <None Include="Tests\OrderServiceTests\OrderRepositoryTests.cs" />
+    <None Include="Tests\OrderServiceTests\OrderRequestValidatorTests.cs" />
   </ItemGroup>
 </Project>

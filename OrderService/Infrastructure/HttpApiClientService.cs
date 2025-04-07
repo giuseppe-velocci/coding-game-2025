@@ -4,16 +4,10 @@ using System.Text.Json;
 
 namespace Infrastructure
 {
-    public class HttpApiClientService : AsbtractHttpApiClientService, IHttpClientService
+    public class HttpApiClientService(IHttpClientFactory httpClientFactory, ILogger<HttpApiClientService> logger) 
+        : AsbtractHttpApiClientService(httpClientFactory, logger), IHttpClientService
     {
-        private readonly ILogger<HttpApiClientService> _logger;
         private readonly static JsonSerializerOptions serializerOptions = new() { PropertyNameCaseInsensitive = true };
-
-        public HttpApiClientService(IHttpClientFactory httpClientFactory, ILogger<HttpApiClientService> logger)
-            :base(httpClientFactory, logger)
-        {
-            _logger = logger;
-        }
 
         public async Task<T?> CallEndpointAsync<T>(string endpointUrl, CancellationToken cts)
         {

@@ -16,13 +16,16 @@ namespace ProductServiceTests
             var context = CreateInMemoryDbContext();
             ProductRepository<Exception> sut = new(context);
 
-            Category cat = new() { Name = "Cat1", CategoryId = 10 };
+            Category cat = new() { Name = "Cat1", CategoryId = 10, IsActive = true };
             var product = new Product
             {
                 ProductId = 1,
                 Name = "Test Product",
-                Category = cat
+                Price = 1,
+                CategoryId = cat.CategoryId
             };
+            context.Categories.Add(cat);
+            context.SaveChanges();
 
             // Act
             var result = await sut.Create(product, CancellationToken.None);
@@ -102,12 +105,18 @@ namespace ProductServiceTests
 
             string expectedName = "P22";
             int expectedCategoryId = 90;
-            Category cat = new() { Name = "Cat1", CategoryId = 60 };
-            Category cat1 = new() { Name = "Cat2", CategoryId = expectedCategoryId };
-            var product = new Product { ProductId = 9, CategoryId = 1, Category = cat, Name = "P1" };
-            context.Add(product);
+            Category cat = new() { Name = "Cat1", CategoryId = 60, IsActive = true };
+            Category cat1 = new() { Name = "Cat2", CategoryId = expectedCategoryId, IsActive = true };
+            Product product = new() { ProductId = 9, CategoryId = 1, Category = cat, Name = "P1" };
+            context.Categories.AddRange(cat, cat1);
+            context.Products.Add(product);
             context.SaveChanges();
-            Product newProduct = new() { CategoryId = cat1.CategoryId, Category = cat, Name = expectedName };
+            Product newProduct = new()
+            {
+                CategoryId = cat1.CategoryId,
+                Category = cat,
+                Name = expectedName
+            };
 
             // Act
             var result = await sut.Update(9, newProduct, CancellationToken.None);
