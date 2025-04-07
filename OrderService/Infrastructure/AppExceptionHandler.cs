@@ -21,7 +21,7 @@ namespace Infrastructure
                         ProblemDetails problemDetails = new()
                         {
                             Title = "Invalid Json",
-                            Status = StatusCodes.Status500InternalServerError,
+                            Status = StatusCodes.Status400BadRequest,
                             Detail = ex.Message
                         };
                         context.Response.StatusCode = 400;
