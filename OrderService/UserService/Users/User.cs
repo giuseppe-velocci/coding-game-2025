@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using UserService.AddressReferences;
 
 namespace UserService.Users
 {
@@ -18,8 +16,5 @@ namespace UserService.Users
         public string Email { get; set; }
         
         public bool IsActive { get; set; }
-
-        [JsonIgnore]
-        public ICollection<AddressReference> Addresses { get; set; }
     }
 }

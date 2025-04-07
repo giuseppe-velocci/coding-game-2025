@@ -16,7 +16,6 @@ namespace UserService.Users.Storage
         public async Task<OperationResult<User>> ReadOne(long id, CancellationToken cts)
         {
             var user = await _context.Users
-                .Include(p => p.Addresses)
                 .FirstOrDefaultAsync(p => p.UserId == id, cts);
             return user == null ?
                     new NotFoundResult<User>($"User {id} not found") :
@@ -26,7 +25,6 @@ namespace UserService.Users.Storage
         public Task<OperationResult<User[]>> ReadAll(CancellationToken cts)
         {
             return _context.Users
-                .Include(p => p.Addresses)
                 .ToArrayAsync(cts)
                 .ContinueWith(x =>
                 {
