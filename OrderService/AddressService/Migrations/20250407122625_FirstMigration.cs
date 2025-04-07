@@ -20,7 +20,8 @@ namespace AddressService.Migrations
                     City = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     State = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Country = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
-                    ZipCode = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false)
+                    ZipCode = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

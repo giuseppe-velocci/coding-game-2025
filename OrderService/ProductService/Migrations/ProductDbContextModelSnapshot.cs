@@ -57,17 +57,12 @@ namespace ProductService.Migrations
             modelBuilder.Entity("ProductService.Products.Product", b =>
                 {
                     b.HasOne("ProductService.Categories.Category", "Category")
-                        .WithMany("Products")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("ProductService.Categories.Category", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

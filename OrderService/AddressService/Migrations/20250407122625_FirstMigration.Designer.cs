@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AddressService.Migrations
 {
     [DbContext(typeof(AddressDbContext))]
-    [Migration("20250407114622_SoftDelete")]
-    partial class SoftDelete
+    [Migration("20250407122625_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

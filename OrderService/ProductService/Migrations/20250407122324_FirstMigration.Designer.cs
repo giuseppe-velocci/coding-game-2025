@@ -10,8 +10,8 @@ using ProductService;
 namespace ProductService.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    [Migration("20250404191858_ProperFk")]
-    partial class ProperFk
+    [Migration("20250407122324_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -60,17 +60,12 @@ namespace ProductService.Migrations
             modelBuilder.Entity("ProductService.Products.Product", b =>
                 {
                     b.HasOne("ProductService.Categories.Category", "Category")
-                        .WithMany("Products")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("ProductService.Categories.Category", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
