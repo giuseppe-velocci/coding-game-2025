@@ -35,18 +35,19 @@ Each microservice uses SQLite for storage, with automatic migrations run at each
 3. Open a terminal pointing to that folder.
 4. Run the command `docker-compose up`
 5. When the deployment is completed, open a Browser
-6. Point to the url `http://localhost:<dinamically-assigned-port>/swagger/index.html`
+6. Point to the url `http://localhost:55007/swagger/index.html`
 
-**TODO**: check the name assigned to the gateway container!!!! 
+**Note**: the port for the `orderapigate` service was hardcoded in the `docker-compose.override.yml` file to have it exposed in a more predicatable way. In case that port is already taken, please update the file accordingly chaging the entry under `orderapigate.ports` to a suitable value (ex. "57002:8080").
 
-**Note**: to get the port where the container is exposed, you should [inspect](https://docs.docker.com/reference/cli/docker/inspect/) the `orderapigate` container. Another option is setting a static bind by editing the `docker-compose.override.yml` file under the section `orderapigate:ports`, and replace the value "8080" with "<port-of-your-choice>:8080". Please ensure that the port is available on your machine.
 
 ## Design Decisions for the Order API Service
 ### Communication Between Services
 The decision to use only API calls for service communication was made to simplify the overall architecture. This approach ensures that each service remains decoupled and can be developed, deployed, and scaled independently. To improve response times and reduce traffic, a layer of caching could be introduced at a later stage as a first improvement step. Caching frequently accessed data can significantly enhance performance and reduce the load on the underlying services.
 
+
 ## Stateless API Gateway
-The API gateway has been designed to be stateless to allow it to scale easily. By not storing any session data, the gateway can handle a large number of requests and distribute the load across multiple instances.
+The API gateway has been designed to be stateless to allow it to scale easily. By not storing any session data, the gateway can handle a large number of requests and distribute the load across multiple instances. It is the only service aware of the others, resulting in an architectural style that leans towards orchestration. While this service could become a single point of failure for the application, the scalability potential mentioned earlier should adequately mitigate this risk.
+
 
 ## Order Microservice
 ### Data Validation
@@ -56,11 +57,26 @@ The order microservice interacts with the API gateway to gather data when valida
 When writing data, the order microservice stores a minimal set of information. However, it retains some product data (name, price, and quantity) to ensure that the price remains fixed and that this information is available even after the eventual deletion of the original data.
 The order service is intended to serve as a store for the history of orders. It relies on external references (IDs) to users and addresses to reference them. This design allows the service to maintain a record of transactions without storing redundant data.
 
-### Soft Deletion
-Soft deletion was chosen to allow for future analysis of canceled orders. This approach marks records as deleted without actually removing them from the database, enabling historical analysis and auditing.
-
 ### Data Aggregation
 The order service does not return user or address details when queried. This composition is reserved for another component (out of the scope of this project) or an external service that can aggregate data from multiple sources.
+
+### Information required to create an Order
+The following information are needed to create an order:
+- Address
+- User (requires Address)
+- Category
+- Product (requires Category)
+
+
+## Address, User and Product services
+The microservices for User, Address, and Product adopt a simple, unified approach by maintaining all data within their respective independent storage systems. They all implement simple CRUD operations.
+
+### Soft Deletion
+Soft deletion is used to preserve references between services by marking records as deleted without removing them from the database. This ensures data consistency, supports historical analysis, and enables auditing across all services. The exception is the Product service, where items can be physically deleted because key order-related values are stored in the Order service. This approach prevents changes to products from affecting past orders. The decision reflects the system's current setup and can be easily reversed if needed.
+
+### Data Creation and Updates
+When an entity refrences an external value that was removed, the operation will be invalid. Also some values cannot be updated: for example a reference to a user cannot be ever changed.
+
 
 ## Endpoints
 List of the endpoint for the OrderApiGate project:
@@ -148,6 +164,7 @@ List of the endpoint for the OrderApiGate project:
    | state	| String	| State name |
    | country	| String	| Country name |
    | zipCode	| String	| Postal code |
+   | isActive	| Bool	| If the entry is valid |
 
 - Endpoint: **POST** /addresses
 - Endpoint: **PUT** /addresses/:id
@@ -193,6 +210,7 @@ List of the endpoint for the OrderApiGate project:
    | userId	| Integer	| Unique identifier for the user |
    | name	| String	| Name of the user |
    | email	| String	| Email address of the user |
+   | isActive	| Bool	| If the entry is valid |
 
 
 - Endpoint: **POST** /users
@@ -229,6 +247,7 @@ List of the endpoint for the OrderApiGate project:
    |-------|------------|-------------|
    | categoryId	| Integer	| Unique identifier for the category |
    | name	| String	| Name of the category |
+   | isActive	| Bool	| If the entry is valid |
 
 
 - Endpoint: **POST** /categories
@@ -338,6 +357,7 @@ List of the endpoint for the OrderApiGate project:
    | productIds	| Object	| Price of the product |
    | category	| Object	| Category details |
    | categoryId	| String	| Unique identifier for the category |
+   | isActive	| Bool	| If the entry is valid |
 
 - Endpoint: **POST** /orders
 - Endpoint: **PUT** /orders/:id
