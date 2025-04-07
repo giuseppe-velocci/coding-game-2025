@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace OrderService.Orders
 {
@@ -19,6 +20,7 @@ namespace OrderService.Orders
 
         public decimal UnitPrice { get; set; }
 
+        [JsonIgnore]
         [ForeignKey("OrderId")]
         public Order Order { get; set; }
     }

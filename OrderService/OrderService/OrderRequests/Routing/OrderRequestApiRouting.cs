@@ -8,7 +8,7 @@ namespace OrderService.OrderRequests.Routing
 {
     public static class OrderRequestApiRouting
     {
-        private const string path = "/order";
+        private const string path = "/orders";
 
         public static IEndpointRouteBuilder MapOrderRequestEndpoints(this IEndpointRouteBuilder app)
         {

@@ -17,7 +17,6 @@ namespace OrderService.Orders
 
         public bool IsActive { get; set; } // for logical deletes
 
-        //[JsonIgnore]
         public ICollection<OrderDetail> OrderDetails { get; set; }
     }
 }
