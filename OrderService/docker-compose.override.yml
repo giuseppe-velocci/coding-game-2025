@@ -3,7 +3,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      #- "${ADDRESS_PORT}:8080"
       - "8080"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
@@ -15,7 +14,6 @@ services:
       - ENDPOINTS_PORT=8080
       - API_GATE_ENDPOINT=http://orderapigate
      ports:
-      #- "${ORDER_PORT}:8080"
       - "8080"
      volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
@@ -25,7 +23,6 @@ services:
      environment:
       - ASPNETCORE_ENVIRONMENT=Development
      ports:
-     # - "${PRODUCT_PORT}:8080"
       - "8080"
      volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
@@ -35,7 +32,6 @@ services:
      environment:
       - ASPNETCORE_ENVIRONMENT=Development
      ports:
-      #- "${USER_PORT}:8080"
       - "8080"
      volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
@@ -50,7 +46,6 @@ services:
       - ORDER_ENDPOINT=http://orderservice
       - ENDPOINTS_PORT=8080
      ports:
-      #- "${API_GATE_PORT}:8080"
       - "8080"
      volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
