@@ -10,6 +10,7 @@ namespace AddressService.Addresses.Storage
         {
             try
             {
+                value.IsActive = true;
                 await _context.Addresses.AddAsync(value, cts);
                 await _context.SaveChangesAsync(cts);
             }
@@ -63,11 +64,15 @@ namespace AddressService.Addresses.Storage
         {
             try
             {
-
                 var storedValue = await _context.Addresses.FindAsync(id, cts);
                 if (storedValue == null)
                 {
                     return new NotFoundResult<None>("Failed reading adresses");
+                }
+
+                if (!storedValue.IsActive)
+                {
+                    return new ValidationFailureResult<None>("Address was removed");
                 }
 
                 storedValue.Street = value.Street;
@@ -98,9 +103,10 @@ namespace AddressService.Addresses.Storage
                 {
                     return new NotFoundResult<None>($"Address {id} Not found");
                 }
-                else
+
+                if (record.IsActive)
                 {
-                    _context.Addresses.Remove(record);
+                    record.IsActive = false;
                     await _context.SaveChangesAsync(cts);
                 }
 

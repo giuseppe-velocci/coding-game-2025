@@ -23,6 +23,8 @@ namespace AddressService.Addresses
 
         [MaxLength(20)]
         public string ZipCode { get; set; }
+
+        public bool IsActive { get; set; }
     }
 
 }
