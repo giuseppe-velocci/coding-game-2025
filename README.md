@@ -44,8 +44,10 @@ Each microservice uses SQLite for storage, with automatic migrations run at each
 ### Communication Between Services
 The decision to use only API calls for service communication was made to simplify the overall architecture. This approach ensures that each service remains decoupled and can be developed, deployed, and scaled independently. To improve response times and reduce traffic, a layer of caching could be introduced at a later stage as a first improvement step. Caching frequently accessed data can significantly enhance performance and reduce the load on the underlying services.
 
+### Communication Failures
+All api calls are wrapped by [Polly](https://www.pollydocs.org/), with a policy that covers both exceptions and bad response codes. A finite set of retry attemps is configured, with a slack time between the calls to give the target system time to recover.
 
-## Stateless API Gateway
+## API Gateway
 The API gateway has been designed to be stateless to allow it to scale easily. By not storing any session data, the gateway can handle a large number of requests and distribute the load across multiple instances. It is the only service aware of the others, resulting in an architectural style that leans towards orchestration. While this service could become a single point of failure for the application, the scalability potential mentioned earlier should adequately mitigate this risk.
 
 
