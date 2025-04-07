@@ -3,34 +3,60 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProductService.Categories.Storage
 {
-    public class CategoryRepository(ProductDbContext _context) : ICrudRepository<Category>
+    public class CategoryRepository<TException>(ProductDbContext _context) : ICrudRepository<Category> where TException : Exception
     {
         public async Task<OperationResult<long>> Create(Category value, CancellationToken cts)
         {
-            await _context.Categories.AddAsync(value, cts);
-            await _context.SaveChangesAsync(cts);
-            return new SuccessResult<long>(value.CategoryId);
+            try
+            {
+                await _context.Categories.AddAsync(value, cts);
+                await _context.SaveChangesAsync(cts);
+                return new SuccessResult<long>(value.CategoryId);
+            }
+            catch (DbUpdateException ex)
+            {
+                return new InvalidRequestResult<long>(ex.Message);
+            }
+            catch (TException ex)
+            {
+                return new InvalidRequestResult<long>(ex.Message);
+            }
         }
 
         public async Task<OperationResult<Category>> ReadOne(long id, CancellationToken cts)
         {
-            var category = await _context.Categories.FindAsync(id, cts);
-            return category == null ?
-                    new NotFoundResult<Category>($"Category {id} not found") :
-                    new SuccessResult<Category>(category);
+            try
+            {
+                var category = await _context.Categories.FindAsync(id, cts);
+                return category == null ?
+                        new NotFoundResult<Category>($"Category {id} not found") :
+                        new SuccessResult<Category>(category);
+            }
+            catch (DbUpdateException ex)
+            {
+                return new InvalidRequestResult<Category>(ex.Message);
+            }
+            catch (TException ex)
+            {
+                return new InvalidRequestResult<Category>(ex.Message);
+            }
         }
 
-        public Task<OperationResult<Category[]>> ReadAll(CancellationToken cts)
+        public async Task<OperationResult<Category[]>> ReadAll(CancellationToken cts)
         {
-            return _context.Categories
-                .ToArrayAsync(cts)
-                .ContinueWith(x =>
-                {
-                    OperationResult<Category[]> res = x.IsCompletedSuccessfully ?
-                        new SuccessResult<Category[]>(x.Result) :
-                        new CriticalFailureResult<Category[]>("Failed reading categories");
-                    return res;
-                });
+            try
+            {
+                var categories = await _context.Categories.ToArrayAsync(cts);
+                return new SuccessResult<Category[]>(categories);
+            }
+            catch (DbUpdateException ex)
+            {
+                return new InvalidRequestResult<Category[]>(ex.Message);
+            }
+            catch (TException ex)
+            {
+                return new InvalidRequestResult<Category[]>(ex.Message);
+            }
         }
 
         public async Task<OperationResult<None>> Update(long id, Category value, CancellationToken cts)

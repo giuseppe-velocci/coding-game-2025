@@ -12,7 +12,7 @@ namespace OrderServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new OrderRepository(context);
+            var sut = new OrderRepository<Exception>(context);
             var order = new Order { UserId = 1, AddressId = 1, OrderDate = DateTime.UtcNow };
 
             //Act
@@ -28,7 +28,7 @@ namespace OrderServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new OrderRepository(context);
+            var sut = new OrderRepository<Exception>(context);
 
             OrderDetail[] orderDetails = InitializeOrderDependencies(context);
             await context.SaveChangesAsync();
@@ -50,7 +50,7 @@ namespace OrderServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new OrderRepository(context);
+            var sut = new OrderRepository<Exception>(context);
 
             OrderDetail[] orderDetail = InitializeOrderDependencies(context);
             var order1 = new Order { OrderId = 1, UserId = 1, AddressId = 1, OrderDetails = [..orderDetail.Where(x => x.OrderId == 1)], OrderDate = DateTime.UtcNow };
@@ -71,7 +71,7 @@ namespace OrderServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new OrderRepository(context);
+            var sut = new OrderRepository<Exception>(context);
 
             OrderDetail[] orderDetail = InitializeOrderDependencies(context);
             var order = new Order
@@ -101,7 +101,7 @@ namespace OrderServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new OrderRepository(context);
+            var sut = new OrderRepository<Exception>(context);
 
             OrderDetail[] orderDetail = InitializeOrderDependencies(context);
             var order = new Order
@@ -129,7 +129,7 @@ namespace OrderServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new OrderRepository(context);
+            var sut = new OrderRepository<Exception>(context);
 
             var order = new Order { UserId = 1, AddressId = 1, OrderDate = DateTime.UtcNow, IsActive = true };
             context.Orders.Add(order);

@@ -13,7 +13,7 @@ namespace ProductServiceTests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new CategoryRepository(context);
+            var sut = new CategoryRepository<Exception>(context);
 
             Category cat = new() { Name = "Cat1", CategoryId = 10 };
             var product = new Category
@@ -38,7 +38,7 @@ namespace ProductServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new CategoryRepository(context);
+            var sut = new CategoryRepository<Exception>(context);
 
             Category[] entities =
             {
@@ -61,7 +61,7 @@ namespace ProductServiceTests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new CategoryRepository(context);
+            var sut = new CategoryRepository<Exception>(context);
 
             var categoryId = 40;
             Category cat = new() { Name = "Cat1", CategoryId = categoryId };
@@ -81,7 +81,7 @@ namespace ProductServiceTests
         {
             //Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new CategoryRepository(context);
+            var sut = new CategoryRepository<Exception>(context);
 
             // Act
             var result = await sut.ReadOne(999, CancellationToken.None);
@@ -96,7 +96,7 @@ namespace ProductServiceTests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new CategoryRepository(context);
+            var sut = new CategoryRepository<Exception>(context);
 
             string expectedName = "Cat2";
             int categoryId = 90;
@@ -119,7 +119,7 @@ namespace ProductServiceTests
         {
             // Arrange
             using var context = CreateInMemoryDbContext();
-            var sut = new CategoryRepository(context);
+            var sut = new CategoryRepository<Exception>(context);
 
             Category cat = new() { Name = "Cat1", CategoryId = 150 };
             context.Add(cat);

@@ -1,5 +1,6 @@
 using Core;
 using Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using UserService;
 using UserService.Users;
@@ -21,7 +22,7 @@ builder
 
 builder.Services
     .AddScoped<IBaseValidator<User>, UserValidator>()
-    .AddScoped<ICrudRepository<User>, UserRepository>()
+    .AddScoped<ICrudRepository<User>, UserRepository<SqliteException>>()
     .AddScoped<ICrudHandler<User>, UserCrudHandler>();
 
 var app = builder.Build();

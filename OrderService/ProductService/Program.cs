@@ -1,5 +1,6 @@
 using Core;
 using Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ProductService;
 using ProductService.Categories;
@@ -27,8 +28,8 @@ builder
 builder.Services
     .AddScoped<IBaseValidator<Category>, CategoryValidator>()
     .AddScoped<IBaseValidator<Product>, ProductValidator>()
-    .AddScoped<ICrudRepository<Category>, CategoryRepository>()
-    .AddScoped<ICrudRepository<Product>, ProductRepository>()
+    .AddScoped<ICrudRepository<Category>, CategoryRepository<SqliteException>>()
+    .AddScoped<ICrudRepository<Product>, ProductRepository<SqliteException>>()
     .AddScoped<ICrudHandler<Category>, CategoryCrudHandler>()
     .AddScoped<ICrudHandler<Product>, ProductCrudHandler>();
 

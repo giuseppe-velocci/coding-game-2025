@@ -40,23 +40,16 @@ namespace AddressService.Addresses.Storage
             }
         }
 
-        public Task<OperationResult<Address[]>> ReadAll(CancellationToken cts)
+        public async Task<OperationResult<Address[]>> ReadAll(CancellationToken cts)
         {
             try
             {
-                return _context.Addresses
-                    .ToArrayAsync(cts)
-                    .ContinueWith(x =>
-                    {
-                        OperationResult<Address[]> res = x.IsCompletedSuccessfully ?
-                            new SuccessResult<Address[]>(x.Result) :
-                            new CriticalFailureResult<Address[]>("Failed reading adresses");
-                        return res;
-                    });
+                var addresses = await _context.Addresses.ToArrayAsync(cts);
+                return new SuccessResult<Address[]>(addresses);
             }
             catch (TException ex)
             {
-                return Task.FromResult(new InvalidRequestResult<Address[]>(ex.Message) as OperationResult<Address[]>);
+                return new InvalidRequestResult<Address[]>(ex.Message);
             }
         }
 

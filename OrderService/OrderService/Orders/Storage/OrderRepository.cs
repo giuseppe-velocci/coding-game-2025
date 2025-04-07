@@ -13,7 +13,6 @@ namespace OrderService.Orders.Storage
                 value.IsActive = true;
                 await _context.Orders.AddAsync(value, cts);
                 await _context.SaveChangesAsync(cts);
-
                 return new SuccessResult<long>(value.OrderId);
             }
             catch (DbUpdateException ex)
@@ -44,24 +43,18 @@ namespace OrderService.Orders.Storage
             }
         }
 
-        public Task<OperationResult<Order[]>> ReadAll(CancellationToken cts)
+        public async Task<OperationResult<Order[]>> ReadAll(CancellationToken cts)
         {
             try
             {
-                return _context.Orders
-                .Include(o => o.OrderDetails)
-                .ToArrayAsync(cts)
-                .ContinueWith(x =>
-                {
-                    OperationResult<Order[]> res = x.IsCompletedSuccessfully ?
-                        new SuccessResult<Order[]>(x.Result) :
-                        new CriticalFailureResult<Order[]>("Failed reading products");
-                    return res;
-                });
+                var orders = await _context.Orders
+                    .Include(o => o.OrderDetails)
+                    .ToArrayAsync(cts);
+                return new SuccessResult<Order[]>(orders);
             }
             catch (TException ex)
             {
-                return Task.FromResult(new InvalidRequestResult<Order[]>(ex.Message) as OperationResult<Order[]>);
+                return new InvalidRequestResult<Order[]>(ex.Message);
             }
         }
 
