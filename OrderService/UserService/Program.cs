@@ -12,20 +12,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder
-    .Services //TODO verify db filepath + pass as ENV var if possible
+    .Services
     .AddDbContext<UserDbContext>(options => options.UseSqlite("Data Source=Users.db"));
 
 builder.Services
     .AddScoped<IBaseValidator<User>, UserValidator>()
     .AddScoped<ICrudRepository<User>, UserRepository>()
-    .AddScoped<ICrudHandler<User>, UserCrudHandler>()
-    ;
+    .AddScoped<ICrudHandler<User>, UserCrudHandler>();
+
 var app = builder.Build();
+
+app.RunWithExceptionHandler();
 
 app.MapUserEndpoints();
 

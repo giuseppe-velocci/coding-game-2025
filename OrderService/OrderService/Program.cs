@@ -14,12 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder
-    .Services //TODO verify db filepath + pass as ENV var if possible
+    .Services
     .AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=Orders.db"));
 
 ApiEndpointConfig config = new(
@@ -36,6 +35,8 @@ builder.Services.AddHttpClient()
     .AddScoped<IOrderRequestHandler, OrderRequestHandler>();
 
 var app = builder.Build();
+
+app.RunWithExceptionHandler();
 
 app.MapOrderRequestEndpoints();
 

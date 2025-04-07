@@ -13,12 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.Configure<RouteHandlerOptions>(options =>
+ {
+     options.ThrowOnBadRequest = true;
+ });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder
-    .Services //TODO verify db filepath + pass as ENV var if possible
+    .Services
     .AddDbContext<AddressDbContext>(options => options.UseSqlite("Data Source=Addresses.db"));
 
 builder.Services
@@ -27,6 +31,9 @@ builder.Services
     .AddScoped<ICrudHandler<Address>, AddressCrudHandler>()
 ;
 var app = builder.Build();
+
+// Exception handling middleware
+app.RunWithExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
