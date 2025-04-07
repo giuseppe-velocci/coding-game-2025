@@ -16,6 +16,8 @@ namespace UserService.Users
 
         [MaxLength(100)]
         public string Email { get; set; }
+        
+        public bool IsActive { get; set; }
 
         [JsonIgnore]
         public ICollection<AddressReference> Addresses { get; set; }
