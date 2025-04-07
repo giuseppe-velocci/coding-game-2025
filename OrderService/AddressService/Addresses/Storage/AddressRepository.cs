@@ -17,32 +17,46 @@ namespace AddressService.Addresses.Storage
             {
                 return new InvalidRequestResult<long>(ex.Message);
             }
-            catch (TException)
+            catch (TException ex)
             {
-                return new InvalidRequestResult<long>("Unexpected exception");
+                return new InvalidRequestResult<long>(ex.Message);
             }
             return new SuccessResult<long>(value.AddressId);
         }
 
         public async Task<OperationResult<Address>> ReadOne(long id, CancellationToken cts)
         {
-            var record = await _context.Addresses.FindAsync(id, cts);
-            return record == null ?
-                    new NotFoundResult<Address>($"Address {id} not found") :
-                    new SuccessResult<Address>(record);
+            try
+            {
+                var record = await _context.Addresses.FindAsync(id, cts);
+                return record == null ?
+                        new NotFoundResult<Address>($"Address {id} not found") :
+                        new SuccessResult<Address>(record);
+            }
+            catch (TException ex)
+            {
+                return new InvalidRequestResult<Address>(ex.Message);
+            }
         }
 
         public Task<OperationResult<Address[]>> ReadAll(CancellationToken cts)
         {
-            return _context.Addresses
-                .ToArrayAsync(cts)
-                .ContinueWith(x =>
-                {
-                    OperationResult<Address[]> res = x.IsCompletedSuccessfully ?
-                        new SuccessResult<Address[]>(x.Result) :
-                        new CriticalFailureResult<Address[]>("Failed reading adresses");
-                    return res;
-                });
+            try
+            {
+                return _context.Addresses
+                    .ToArrayAsync(cts)
+                    .ContinueWith(x =>
+                    {
+                        OperationResult<Address[]> res = x.IsCompletedSuccessfully ?
+                            new SuccessResult<Address[]>(x.Result) :
+                            new CriticalFailureResult<Address[]>("Failed reading adresses");
+                        return res;
+                    });
+            }
+            catch (TException ex)
+            {
+                return Task.FromResult(new InvalidRequestResult<Address[]>(ex.Message) as OperationResult<Address[]>);
+            }
         }
 
         public async Task<OperationResult<None>> Update(long id, Address value, CancellationToken cts)
@@ -69,9 +83,9 @@ namespace AddressService.Addresses.Storage
             {
                 return new InvalidRequestResult<None>(ex.Message);
             }
-            catch (TException)
+            catch (TException ex)
             {
-                return new InvalidRequestResult<None>("Unexpected exception");
+                return new InvalidRequestResult<None>(ex.Message);
             }
         }
 
@@ -96,9 +110,9 @@ namespace AddressService.Addresses.Storage
             {
                 return new InvalidRequestResult<None>(ex.Message);
             }
-            catch (TException)
+            catch (TException ex)
             {
-                return new InvalidRequestResult<None>("Unexpected exception");
+                return new InvalidRequestResult<None>(ex.Message);
             }
         }
     }

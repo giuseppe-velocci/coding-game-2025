@@ -1,5 +1,6 @@
 using Core;
 using Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using OrderService;
 using OrderService.OrderRequests;
@@ -29,7 +30,7 @@ ApiEndpointConfig config = new(
 builder.Services.AddHttpClient()
     .AddSingleton<ApiEndpointConfig>(config)
     .AddScoped<IBaseValidator<OrderRequest>, OrderRequestValidator>()
-    .AddScoped<ICrudRepository<Order>, OrderRepository>()
+    .AddScoped<ICrudRepository<Order>, OrderRepository<SqliteException>>()
     .AddScoped<IApiGatewayCaller, ApiGatewayCaller>()
     .AddScoped<IHttpClientService, HttpApiClientService>()
     .AddScoped<IOrderRequestHandler, OrderRequestHandler>();
