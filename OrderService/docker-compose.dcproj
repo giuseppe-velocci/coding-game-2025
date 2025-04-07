@@ -19,5 +19,7 @@
     <None Include="Tests\AddressServiceTests\AddressValidatorTests.cs" />
     <None Include="Tests\OrderServiceTests\OrderRepositoryTests.cs" />
     <None Include="Tests\OrderServiceTests\OrderRequestValidatorTests.cs" />
+    <None Include="Tests\UserServiceTests\UserRepositoryTests.cs" />
+    <None Include="Tests\UserServiceTests\UserValidatorTests.cs" />
   </ItemGroup>
 </Project>
