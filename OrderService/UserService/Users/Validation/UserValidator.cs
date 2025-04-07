@@ -5,12 +5,8 @@
     using Infrastructure;
     using Microsoft.Extensions.Logging;
 
-    public class UserValidator : BaseValidator<User, UserValidator>, IBaseValidator<User>
+    public class UserValidator(ILogger<UserValidator> logger) : BaseValidator<User, UserValidator>(logger), IBaseValidator<User>
     {
-        public UserValidator(ILogger<UserValidator> logger) : base(logger)
-        {
-        }
-
         protected override void SetupValidation()
         {
             RuleFor(user => user.Name)
